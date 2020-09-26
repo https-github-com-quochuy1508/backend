@@ -68,3 +68,4 @@ create table `comments` (
     user_id int(11),
     create_at datetime
 );
+ALTER TABLE `users` CHANGE `birthday` `birthday` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP;
