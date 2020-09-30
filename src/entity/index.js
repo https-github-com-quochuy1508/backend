@@ -4,7 +4,7 @@ import associate from './reference';
 
 const models = {};
 
-const modules = [require('./users'), require('./posts')];
+const modules = [require('./users'), require('./posts'), require('./comments')];
 
 // console.log("modules: ", modules);
 modules.forEach((module) => {

@@ -1,5 +1,5 @@
 export default (models) => {
-	const { users, posts } = models;
+	const { users, posts, comments } = models;
 
 	// users
 	// users.belongsToMany(courses, {
@@ -8,7 +8,7 @@ export default (models) => {
 	//   as: "courses",
 	// });
 	posts.belongsTo(users, { as: 'users', foreignKey: 'userId' });
-
+	comments.belongsTo(posts, { as: 'posts', foreignKey: 'postId' });
 	// // topics
 	// topics.hasMany(categories, { as: "categories", foreignKey: "topicsId" });
 

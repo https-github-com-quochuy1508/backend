@@ -8,60 +8,67 @@ const DEFAULT_SCHEMA = {
 		number: noArguments,
 		label: viMessage.userId,
 		integer: noArguments,
+    }),
+    postId: ValidateJoi.createSchemaProp({
+		number: noArguments,
+		label: viMessage['api.posts.id'],
+		integer: noArguments,
 	}),
 	content: ValidateJoi.createSchemaProp({
 		string: noArguments,
-		label: viMessage['api.posts.content'],
+		label: viMessage['api.comments.content'],
 	}),
 };
 
 export default {
-	authenCreate: (req, res, next) => {
-		console.log('Validate Create');
+	createComment: (req, res, next) => {
+		console.log('Validate Create Comment');
 
-		const { userId, content } = req.body; // userId từ local  input data => content
-		const posts = { userId, content };
+        const { userId, postId, content } = req.body; // userId từ local  input data => content
+		const comments = { userId, postId, content };
 
 		const SCHEMA = ValidateJoi.assignSchema(DEFAULT_SCHEMA, {
 			userId: {
 				required: noArguments,
+            },
+            postId: {
+				required: noArguments,
 			},
 			content: {
-				min: 20,
 				max: 500,
 				required: noArguments,
 			},
 		});
 
-		ValidateJoi.validate(posts, SCHEMA)
+		ValidateJoi.validate(comments, SCHEMA)
 			.then((data) => {
 				res.locals.body = data;
 				next();
 			})
 			.catch((error) => next({ ...error, message: 'Định dạng gửi đi không đúng' }));
-	},
-	
-	authenUpdate: (req, res, next) => {
-		console.log('Validate Create');
+    },
+    
+	// authenUpdate: (req, res, next) => {
+	// 	console.log('Validate Create');
 
-		const { content } = req.body;
-		const posts = { content };
+	// 	const { content } = req.body;
+	// 	const posts = { content };
 
-		const SCHEMA = ValidateJoi.assignSchema(DEFAULT_SCHEMA, {
-			content: {
-				max: 500,
-			},
-		});
+	// 	const SCHEMA = ValidateJoi.assignSchema(DEFAULT_SCHEMA, {
+	// 		content: {
+	// 			max: 500,
+	// 		},
+	// 	});
 
-		ValidateJoi.validate(posts, SCHEMA)
-			.then((data) => {
-				res.locals.body = data;
-				next();
-			})
-			.catch((error) => next({ ...error, message: 'Định dạng gửi đi không đúng' }));
-	},
+	// 	ValidateJoi.validate(posts, SCHEMA)
+	// 		.then((data) => {
+	// 			res.locals.body = data;
+	// 			next();
+	// 		})
+	// 		.catch((error) => next({ ...error, message: 'Định dạng gửi đi không đúng' }));
+	// },
 
-	authenFilter: (req, res, next) => {
+	getComments: (req, res, next) => {
 		const { filter, sort, range } = req.query;
 
 		res.locals.sort = sort
@@ -70,31 +77,18 @@ export default {
 		res.locals.range = range ? JSON.parse(range) : [0, 49];
 
 		console.log('res.locals: ', res.locals);
+
 		if (filter) {
-			const { id, content } = JSON.parse(filter);
-			const post = {
-				id,
-				content,
-			};
+			const { postId } = JSON.parse(filter);
+			const comment = { postId };
 
-			const SCHEMA = {
-				id: ValidateJoi.createSchemaProp({
-					string: noArguments,
-					label: viMessage['api.posts.id'],
-					regex: regexPattern.listIds,
-				}),
-				...DEFAULT_SCHEMA,
-			};
+			const SCHEMA = { ...DEFAULT_SCHEMA };
 
-			// console.log('input: ', input);
-			ValidateJoi.validate(post, SCHEMA)
+			ValidateJoi.validate(comment, SCHEMA)
 				.then((data) => {
 					console.log('data: ', data);
-					if (id) {
-						ValidateJoi.transStringToArray(data, 'id');
-					}
-					// if (wardsId) {
-					// 	ValidateJoi.transStringToArray(data, 'wardsId');
+					// if (postId) {
+					// 	ValidateJoi.transStringToArray(data, 'id');
 					// }
 
 					res.locals.filter = data;
