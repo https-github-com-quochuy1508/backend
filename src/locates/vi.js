@@ -1,5 +1,6 @@
 import users from './vi-Vi/users';
 import posts from './vi-Vi/posts';
+import comments from './vi-Vi/comments';
 
 export default {
 	// Định nghĩa thông tin chung cho phần thông báo
@@ -29,4 +30,8 @@ export default {
 	// posts
 	...posts,
 	posts: 'Bài viết',
+
+	// comments
+	...comments,
+
 };
