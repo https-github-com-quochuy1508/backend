@@ -5,7 +5,7 @@ import regexPattern from '../utils/regexPattern';
 const DEFAULT_SCHEMA = {
 	telephone: ValidateJoi.createSchemaProp({
 		string: noArguments,
-		label: viMessage['api.users.username'],
+		label: viMessage['api.users.telephone'],
 	}),
 	password: ValidateJoi.createSchemaProp({
 		string: noArguments,

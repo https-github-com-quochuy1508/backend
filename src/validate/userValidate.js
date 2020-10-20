@@ -4,84 +4,76 @@ import { sequelize } from '../db/db';
 import regexPattern from '../utils/regexPattern';
 
 const DEFAULT_SCHEMA = {
-	username: ValidateJoi.createSchemaProp({
+	telephone: ValidateJoi.createSchemaProp({
 		string: noArguments,
-		label: viMessage['api.users.username'],
+		label: viMessage['api.users.telephone'],
 	}),
 	password: ValidateJoi.createSchemaProp({
 		string: noArguments,
 		label: viMessage['api.users.password'],
 	}),
+	oldPassword: ValidateJoi.createSchemaProp({
+		string: noArguments,
+		label: viMessage['api.users.oldPassword'],
+	}),
+	newPassword: ValidateJoi.createSchemaProp({
+		string: noArguments,
+		label: viMessage['api.users.newPassword'],
+	}),
+	newPasswordConfirm: ValidateJoi.createSchemaProp({
+		string: noArguments,
+		label: viMessage['api.users.newPasswordConfirm'],
+	}),
 	name: ValidateJoi.createSchemaProp({
 		string: noArguments,
 		label: viMessage['api.users.name'],
 	}),
-	email: ValidateJoi.createSchemaProp({
+	avatar: ValidateJoi.createSchemaProp({
 		string: noArguments,
-		label: viMessage['api.users.email'],
-		allow: ['', null],
+		label: viMessage['api.users.avatar'],
 	}),
-	mobile: ValidateJoi.createSchemaProp({
+	token: ValidateJoi.createSchemaProp({
 		string: noArguments,
-		label: viMessage['api.users.mobile'],
+		label: viMessage['api.users.token'],
 	}),
-	wardsId: ValidateJoi.createSchemaProp({
-		number: noArguments,
-		label: viMessage.userId,
-		integer: noArguments,
+	countFriends: ValidateJoi.createSchemaProp({
+		string: noArguments,
+		label: viMessage['api.users.countFriends'],
 	}),
-	groupUsersId: ValidateJoi.createSchemaProp({
-		number: noArguments,
-		label: viMessage.userId,
-		integer: noArguments,
+	birthday: ValidateJoi.createSchemaProp({
+		string: noArguments,
+		label: viMessage['api.users.birthday'],
 	}),
-	status: ValidateJoi.createSchemaProp({
-		boolean: noArguments,
-		label: viMessage.status,
-	}),
-	//   createDate: ValidateJoi.createSchemaProp({
-	//     date: noArguments,
-	//     label: viMessage.createDate
-	//   })
 };
 
 export default {
 	authenCreate: (req, res, next) => {
-		console.log('Validate Create');
+		console.log('Validate Create: ', req.body);
 
-		const { username, password, name, email, mobile, wardsId, status } = req.body;
-		const user = { username, password, email, name, mobile, wardsId, status };
+		const { telephone, name, password, token, avatar, countFriends, birthday } = req.body;
+		const user = { telephone, name, password, token, avatar, countFriends, birthday };
 
 		const SCHEMA = ValidateJoi.assignSchema(DEFAULT_SCHEMA, {
-			username: {
-				regex: /\w/i,
-				max: 50,
+			telephone: {
+				regex: regexPattern.phoneNumberVie_,
+				max: 12,
 				required: noArguments,
 			},
 			password: {
 				min: 6,
-				max: 100,
-				required: noArguments,
-			},
-			wardsId: {
+				max: 20,
 				required: noArguments,
 			},
 			name: {
 				max: 100,
 				required: noArguments,
 			},
-			email: {
-				regex: regexPattern.email,
+			token: {
 				max: 100,
-			},
-			mobile: {
-				regex: regexPattern.phoneNumberVie,
-				max: 12,
-			},
-			wardsId: {
 				required: noArguments,
 			},
-			status: {
+			birthday: {
+				regex: regexPattern.birthday,
 				required: noArguments,
 			},
 		});
@@ -96,24 +88,53 @@ export default {
 	authenUpdate: (req, res, next) => {
 		console.log('Validate Create');
 
-		const { password, name, email, mobile, wardsId, status } = req.body;
-		const user = { password, email, name, mobile, wardsId, status };
+		const { telephone, name, password, token, avatar, countFriends, birthday } = req.body;
+		const user = { telephone, name, password, token, avatar, countFriends, birthday };
 
 		const SCHEMA = ValidateJoi.assignSchema(DEFAULT_SCHEMA, {
 			password: {
 				min: 6,
-				max: 100,
+				max: 20,
 			},
 			name: {
 				max: 100,
 			},
-			email: {
-				regex: regexPattern.email,
+			token: {
 				max: 100,
 			},
-			mobile: {
-				regex: regexPattern.phoneNumberVie,
-				max: 12,
+			birthday: {
+				regex: regexPattern.formatdateVie,
+			},
+		});
+
+		ValidateJoi.validate(user, SCHEMA)
+			.then((data) => {
+				res.locals.body = data;
+				next();
+			})
+			.catch((error) => next({ ...error, message: 'Định dạng gửi đi không đúng' }));
+	},
+	changePassword: (req, res, next) => {
+		console.log('Validate Chànepassword', req.body);
+
+		const { oldPassword, newPassword, newPasswordConfirm } = req.body;
+		const user = { oldPassword, newPassword, newPasswordConfirm };
+
+		const SCHEMA = ValidateJoi.assignSchema(DEFAULT_SCHEMA, {
+			oldPassword: {
+				min: 6,
+				max: 20,
+				required: noArguments,
+			},
+			newPassword: {
+				min: 6,
+				max: 20,
+				required: noArguments,
+			},
+			newPasswordConfirm: {
+				min: 6,
+				max: 20,
+				required: noArguments,
 			},
 		});
 
@@ -135,18 +156,15 @@ export default {
 
 		console.log('res.locals: ', res.locals);
 		if (filter) {
-			const { id, username, name, email, mobile, wardsId, status, FromDate, groupUsersId, ToDate } = JSON.parse(
-				filter
-			);
+			const { id, telephone, name, password, token, avatar, countFriends, FromDate, ToDate } = JSON.parse(filter);
 			const user = {
 				id,
-				username,
+				telephone,
 				name,
-				email,
-				mobile,
-				wardsId,
-				groupUsersId,
-				status,
+				password,
+				token,
+				avatar,
+				countFriends,
 				FromDate,
 				ToDate,
 			};
@@ -158,16 +176,6 @@ export default {
 					regex: regexPattern.listIds,
 				}),
 				...DEFAULT_SCHEMA,
-				wardsId: ValidateJoi.createSchemaProp({
-					string: noArguments,
-					label: viMessage.wardsId,
-					regex: regexPattern.listIds,
-				}),
-				groupUsersId: ValidateJoi.createSchemaProp({
-					string: noArguments,
-					label: viMessage.groupUsersId,
-					regex: regexPattern.listIds,
-				}),
 				FromDate: ValidateJoi.createSchemaProp({
 					date: noArguments,
 					label: viMessage.FromDate,
@@ -184,9 +192,6 @@ export default {
 					console.log('data: ', data);
 					if (id) {
 						ValidateJoi.transStringToArray(data, 'id');
-					}
-					if (wardsId) {
-						ValidateJoi.transStringToArray(data, 'wardsId');
 					}
 
 					res.locals.filter = data;
