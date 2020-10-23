@@ -6,8 +6,8 @@ import commentValidate from '../../validate/commentValidate';
 const router = Router();
 
 // router.get('/', postValidate.authenFilter, postController.get_list);
-router.get("/", commentValidate.getComments, commentController.get_comments);
-router.post('/', commentValidate.createComment, commentController.create);
+router.get("/", commentValidate.commentFilter, commentController.get_list);
+router.post('/', commentValidate.commentCreate, commentController.create);
 // router.put('/:id', postValidate.authenUpdate, postController.update);
 // router.get('/:id', postController.get_one);
 // router.get("/get/all", userCourseController.get_all);

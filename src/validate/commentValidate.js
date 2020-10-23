@@ -21,7 +21,7 @@ const DEFAULT_SCHEMA = {
 };
 
 export default {
-	createComment: (req, res, next) => {
+	commentCreate: (req, res, next) => {
 		console.log('Validate Create Comment');
 
         const { userId, postId, content } = req.body; // userId từ local  input data => content
@@ -47,28 +47,8 @@ export default {
 			})
 			.catch((error) => next({ ...error, message: 'Định dạng gửi đi không đúng' }));
     },
-    
-	// authenUpdate: (req, res, next) => {
-	// 	console.log('Validate Create');
 
-	// 	const { content } = req.body;
-	// 	const posts = { content };
-
-	// 	const SCHEMA = ValidateJoi.assignSchema(DEFAULT_SCHEMA, {
-	// 		content: {
-	// 			max: 500,
-	// 		},
-	// 	});
-
-	// 	ValidateJoi.validate(posts, SCHEMA)
-	// 		.then((data) => {
-	// 			res.locals.body = data;
-	// 			next();
-	// 		})
-	// 		.catch((error) => next({ ...error, message: 'Định dạng gửi đi không đúng' }));
-	// },
-
-	getComments: (req, res, next) => {
+	commentFilter: (req, res, next) => {
 		const { filter, sort, range } = req.query;
 
 		res.locals.sort = sort
@@ -88,7 +68,7 @@ export default {
 				.then((data) => {
 					console.log('data: ', data);
 					// if (postId) {
-					// 	ValidateJoi.transStringToArray(data, 'id');
+					// 		ValidateJoi.transStringToArray(data, 'id');
 					// }
 
 					res.locals.filter = data;
