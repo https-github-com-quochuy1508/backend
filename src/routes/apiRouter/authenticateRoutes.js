@@ -84,7 +84,7 @@ router.post('/login', authenticateValidate.authenCreate, async (req, res, next) 
 				} else {
 					throw new BaseError({
 						statusCode: 200,
-						type: 'userNotFoundError',
+						type: 'UserNotValidated',
 						name: 'Login',
 					});
 				}

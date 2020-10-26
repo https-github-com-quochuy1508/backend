@@ -69,3 +69,6 @@ create table `comments` (
     create_at datetime
 );
 ALTER TABLE `users` CHANGE `birthday` `birthday` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP;
+
+ALTER TABLE `facebookdb`.`users` 
+CHANGE COLUMN `token` `uuid` VARCHAR(100) NULL DEFAULT NULL ;
