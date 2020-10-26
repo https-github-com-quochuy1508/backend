@@ -32,9 +32,9 @@ const DEFAULT_SCHEMA = {
 		string: noArguments,
 		label: viMessage['api.users.avatar'],
 	}),
-	token: ValidateJoi.createSchemaProp({
+	uuid: ValidateJoi.createSchemaProp({
 		string: noArguments,
-		label: viMessage['api.users.token'],
+		label: viMessage['api.users.uuid'],
 	}),
 	countFriends: ValidateJoi.createSchemaProp({
 		string: noArguments,
@@ -50,8 +50,8 @@ export default {
 	authenCreate: (req, res, next) => {
 		console.log('Validate Create: ', req.body);
 
-		const { telephone, name, password, token, avatar, countFriends, birthday } = req.body;
-		const user = { telephone, name, password, token, avatar, countFriends, birthday };
+		const { telephone, name, password, uuid, avatar, countFriends, birthday } = req.body;
+		const user = { telephone, name, password, uuid, avatar, countFriends, birthday };
 
 		const SCHEMA = ValidateJoi.assignSchema(DEFAULT_SCHEMA, {
 			telephone: {
@@ -68,7 +68,7 @@ export default {
 				max: 100,
 				required: noArguments,
 			},
-			token: {
+			uuid: {
 				max: 100,
 				required: noArguments,
 			},
@@ -88,8 +88,8 @@ export default {
 	authenUpdate: (req, res, next) => {
 		console.log('Validate Create');
 
-		const { telephone, name, password, token, avatar, countFriends, birthday } = req.body;
-		const user = { telephone, name, password, token, avatar, countFriends, birthday };
+		const { telephone, name, password, uuid, avatar, countFriends, birthday } = req.body;
+		const user = { telephone, name, password, uuid, avatar, countFriends, birthday };
 
 		const SCHEMA = ValidateJoi.assignSchema(DEFAULT_SCHEMA, {
 			password: {
@@ -99,7 +99,7 @@ export default {
 			name: {
 				max: 100,
 			},
-			token: {
+			uuid: {
 				max: 100,
 			},
 			birthday: {
@@ -156,13 +156,13 @@ export default {
 
 		console.log('res.locals: ', res.locals);
 		if (filter) {
-			const { id, telephone, name, password, token, avatar, countFriends, FromDate, ToDate } = JSON.parse(filter);
+			const { id, telephone, name, password, uuid, avatar, countFriends, FromDate, ToDate } = JSON.parse(filter);
 			const user = {
 				id,
 				telephone,
 				name,
 				password,
-				token,
+				uuid,
 				avatar,
 				countFriends,
 				FromDate,
