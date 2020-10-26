@@ -15,24 +15,22 @@ export default {
 		let finalResult;
 		try {
 			const { filter, range, sort } = param; // vua viet o validate
-			let whereFilter = filterHelpers.makeStringFilterRelatively(['content'], filter);
+			let whereFilter = filterHelpers.makeStringFilterRelatively(['path'], filter);
 			console.log('filter: ', whereFilter);
 			const perPage = range[1] - range[0] + 1;
 			const page = Math.floor(range[0] / perPage);
 
-			const result = await Model.findAndCountAll(posts, {
+			const result = await Model.findAndCountAll(media, {
 				where: whereFilter,
 				order: [sort],
 				include: [
 					{
 						model: users,
 						as: 'users',
-						attributes: ['id', 'telephone'],
 					},
 					{
-						model: media,
-						as: 'media',
-						attributes: ['id', 'path', 'type'],
+						model: posts,
+						as: 'posts',
 					},
 				],
 			}).catch((error) => {
@@ -58,20 +56,8 @@ export default {
 
 			const whereFilter = { id };
 
-			const result = await Model.findOne(posts, {
+			const result = await Model.findOne(media, {
 				where: whereFilter,
-				include: [
-					{
-						model: users,
-						as: 'users',
-						attributes: ['id', 'telephone'],
-					},
-					{
-						model: media,
-						as: 'media',
-						attributes: ['id', 'path', 'type'],
-					},
-				],
 			}).catch((error) => {
 				ErrorHelpers.errorThrow(error, 'getInfoError', 'UserServices');
 			});
@@ -98,7 +84,7 @@ export default {
 
 			console.log('entity: ', entity);
 
-			finalResult = await Model.create(posts, entity).catch((err) => {
+			finalResult = await Model.create(media, entity).catch((err) => {
 				ErrorHelpers.errorThrow(error, 'crudError', 'postServices');
 			});
 		} catch (error) {
@@ -113,14 +99,14 @@ export default {
 		try {
 			let { entity } = param;
 
-			const foundPost = await Model.findOne(posts, {
+			const foundPost = await Model.findOne(media, {
 				where: {
 					id: param.id,
 				},
 			});
 
 			if (foundPost) {
-				await Model.update(posts, entity, {
+				await Model.update(media, entity, {
 					where: {
 						id: parseInt(param.id),
 					},
@@ -133,7 +119,7 @@ export default {
 					});
 				}); // 1 0
 
-				finalResult = await Model.findOne(posts, {
+				finalResult = await Model.findOne(media, {
 					where: {
 						id: parseInt(param.id),
 					},
@@ -157,5 +143,40 @@ export default {
 			ErrorHelpers.errorThrow(error, 'crudError', 'postServices');
 		}
 		return { result: finalResult };
+	},
+	delete: async (param) => {
+		let finalResult;
+
+		try {
+			const foundPost = await Model.findOne(media, {
+				where: {
+					id: param.id,
+				},
+			});
+
+			if (foundPost) {
+				finalResult = await Model.destroy(media, {
+					where: {
+						id: parseInt(param.id),
+					},
+				}).catch((error) => {
+					throw new ApiErrors.BaseError({
+						statusCode: 202,
+						type: 'deleteError',
+						message: 'Update không thành công',
+						error,
+					});
+				}); // 1 0
+				console.log('finalResult: ', finalResult);
+			} else {
+				throw new ApiErrors.BaseError({
+					statusCode: 202,
+					type: 'crudNotExisted',
+				});
+			}
+		} catch (error) {
+			ErrorHelpers.errorThrow(error, 'crudError', 'postServices');
+		}
+		return { status: finalResult };
 	},
 };

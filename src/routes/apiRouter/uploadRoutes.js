@@ -1,11 +1,18 @@
 import { Router } from 'express';
 import multer from 'multer';
 const router = Router();
+import os from 'os';
 import fs from 'fs';
 import path from 'path';
 import encodeStr from '../../utils/encodeStr';
 import * as ApiErrors from '../../errors';
+import mediaValidate from '../../validate/mediaValidate';
+import Model from '../../models/models';
+import models from '../../entity/index';
+import ErrorHelpers from '../../helpers/errorHelpers';
+import mediaController from '../../controller/mediaController';
 
+const { media } = models;
 const ROOT_DIR = process.cwd();
 const ROOT_DIR_CONTAINER = `${ROOT_DIR}/uploads`;
 // SET STORAGE
@@ -14,7 +21,6 @@ const storage = multer.diskStorage({
 		cb(null, 'uploads');
 	},
 	filename: function (req, file, cb) {
-		console.log(file);
 		const originalname = encodeStr(file.originalname);
 		cb(null, file.fieldname + '-' + originalname);
 	},
@@ -36,8 +42,8 @@ const readFile = (fileName) =>
 	});
 
 const fileFilter = (req, file, cb) => {
-	// // console.log("file: ", file);
-	// // console.log("req: ", req.file);
+	console.log('file: ', file);
+	console.log('req: ', req.file);
 	const regex = /^video/;
 	// // console.log("file.mimetype: ", regex.test(file.mimetype));
 	if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png' || regex.test(file.mimetype)) {
@@ -59,29 +65,31 @@ const upload = multer({
 	fileFilter,
 	limits: 1024 * 1024 * 1024,
 });
-router.post('/uploadfile', upload.single('myFiles'), (req, res, next) => {
-	// // console.log(res);
-	// // console.log(next);
+router.post('/uploadfile', upload.single('myFiles'), mediaValidate.authenCreate, async (req, res, next) => {
 	const file = req.file;
 	let objReturn;
-	console.log('req: ', req.file);
+	const { userId, postId } = res.locals.body;
 	if (!file) {
 		throw new ApiErrors.BaseError({
 			statusCode: 202,
-			type: 'crudError',
+			type: 'uploadFileFaild',
 			error: 'Có lỗi trong lúc upload',
 		});
 	} else {
 		const dirPath = path.resolve(file.path).replace(/\\/g, '/');
 		const dirRelativePath = `myFiles${dirPath.split('myFiles')[1]}`;
+		const networkInterfaces = os.networkInterfaces()['wlp3s0'][0]['address'];
+		console.log(networkInterfaces);
 
-		objReturn = {
-			originalname: file.originalname,
-			mimetype: file.mimetype,
-			size: file.size,
-			filename: file.filename,
-			path: dirRelativePath,
+		const entity = {
+			userId,
+			postId,
+			type: file.mimetype,
+			path: networkInterfaces + ':3001/web/upload/getFile/' + dirRelativePath,
 		};
+		objReturn = await Model.create(media, entity).catch((err) => {
+			ErrorHelpers.errorThrow(error, 'crudError', 'postServices');
+		});
 	}
 	res.send(objReturn);
 });
@@ -125,4 +133,7 @@ router.get('/getFile/*', (req, res, next) => {
 		next(error);
 	}
 });
+router.get('/getListFile', mediaValidate.authenFilter, mediaController.get_list);
+router.delete('/:id', mediaController.delete);
+
 export default router;

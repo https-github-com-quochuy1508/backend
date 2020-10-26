@@ -1,5 +1,6 @@
 import users from './vi-Vi/users';
 import posts from './vi-Vi/posts';
+import medias from './vi-Vi/medias';
 
 export default {
 	// Định nghĩa thông tin chung cho phần thông báo
@@ -29,4 +30,10 @@ export default {
 	// posts
 	...posts,
 	posts: 'Bài viết',
+	postId: 'Id tài khoản',
+
+	// media
+	...medias,
+	medias: 'Tệp truyển thông',
+	mediaId: 'Id Tệp',
 };
