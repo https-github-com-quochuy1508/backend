@@ -7,6 +7,6 @@ const router = Router();
 
 router.get('/', userValidate.authenFilter, userController.get_list);
 router.get('/:id', userController.get_one);
-router.post('/changepass/:id', userValidate.changePassword, userController.changePass);
-router.put('/:id', userValidate.authenUpdate, userController.update);
+router.post('/', userValidate.authenCreate, userController.create);
+// router.get('/get/all', userController.get_all);
 export default router;

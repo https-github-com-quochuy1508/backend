@@ -1,19 +1,24 @@
-import userService from '../services/userService';
+import mediaService from '../services/mediaService';
+import loggerHelpers from '../helpers/loggerHelpers';
+// import { recordStartTime } from "../utils/loggerFormat";
+// import { codeMessage } from "../utils";
+import errorCode from '../utils/errorCode';
 import * as ApiErrors from '../errors';
 
 export default {
 	get_list: (req, res, next) => {
+		// recordStartTime.call(req);
+		console.log('locals', res.locals);
 		try {
-			console.log('res.locals.data: ', res.locals);
-			let { sort, range, filter } = res.locals;
-
+			const { sort, range, filter } = res.locals;
 			const param = {
 				sort,
 				range,
 				filter,
+				auth: req.auth,
 			};
 
-			userService
+			mediaService
 				.get_list(param)
 				.then((data) => {
 					const dataOutput = {
@@ -30,7 +35,14 @@ export default {
 						messages: [],
 					};
 
-					res.send(dataOutput);
+					res.header('Content-Range', `sclSocialAccounts ${range}/${data.count}`);
+					res.send(dataOutput); // tra ve du lieu
+					// write log
+					// recordStartTime.call(res);
+					loggerHelpers.logInfor(req, res, {
+						dataParam: req.params,
+						dataQuery: req.query,
+					});
 				})
 				.catch((error) => {
 					error.dataQuery = req.query;
@@ -41,54 +53,40 @@ export default {
 			next(error);
 		}
 	},
-
 	get_one: (req, res, next) => {
+		// recordStartTime.call(req);
 		try {
 			const { id } = req.params;
-			const param = { id, auth: req.auth };
-			userService
+			const param = { id };
+
+			// console.log("mediaService param: ", param)
+			mediaService
 				.get_one(param)
 				.then((data) => {
-					// res.header('Content-Range', `articles ${range}/${data.count}`);
 					res.send(data);
 
-					// loggerHelpers.logInfor(req, res, {
-					//   dataParam: req.params,
-					//   dataQuery: req.query,
-					// });
+					// recordStartTime.call(res);
+					loggerHelpers.logInfor(req, res, {
+						dataParam: req.params,
+						dataQuery: req.query,
+					});
 				})
-				.catch((err) => {
-					next(err);
+				.catch((error) => {
+					next(error);
 				});
 		} catch (error) {
+			error.dataParams = req.params;
 			next(error);
 		}
 	},
-
-	find_one: (user) =>
-		new Promise((resolve, reject) => {
-			try {
-				userService
-					.find_one(user)
-					.then((data) => {
-						resolve(data);
-					})
-					.catch((error) => {
-						reject(error);
-					});
-			} catch (error) {
-				reject(error);
-			}
-		}),
-
 	create: (req, res, next) => {
+		// recordStartTime.call(req);
 		try {
-			console.log('Request-Body:', res.locals.body);
-			const param = {
-				entity: res.locals.body,
-			};
+			console.log('Request-Body:', req.body);
+			const entity = res.locals.body;
+			const param = { entity };
 
-			userService
+			mediaService
 				.create(param)
 				.then((data) => {
 					if (data && data.result) {
@@ -100,8 +98,15 @@ export default {
 						};
 
 						res.send(dataOutput);
+						// recordStartTime.call(res);
+						loggerHelpers
+							.logCreate(req, res, {
+								dataQuery: req.query,
+								dataOutput: data.result,
+							})
+							.catch((error) => console.log(error));
 					} else {
-						throw new Error({
+						throw new ApiErrors.BaseError({
 							statusCode: 202,
 							type: 'crudNotExisted',
 						});
@@ -114,18 +119,17 @@ export default {
 			next(error);
 		}
 	},
-
 	update: (req, res, next) => {
+		// recordStartTime.call(req);
 		try {
 			const { id } = req.params;
 			const entity = res.locals.body;
 			// const entity = req.body
-			const param = { id, entity, auth: req.auth };
+			const param = { id, entity };
 
-			userService
+			mediaService
 				.update(param)
 				.then((data) => {
-					console.log('data: ', data);
 					if (data && data.result) {
 						const dataOutput = {
 							result: data.result,
@@ -136,7 +140,7 @@ export default {
 
 						res.send(dataOutput);
 
-						recordStartTime.call(res);
+						// recordStartTime.call(res);
 						loggerHelpers
 							.logUpdate(req, res, {
 								dataQuery: req.query,
@@ -161,47 +165,42 @@ export default {
 			next(error);
 		}
 	},
-
-	changePass: (req, res, next) => {
+	delete: (req, res, next) => {
+		// recordStartTime.call(req);
 		try {
 			const { id } = req.params;
-			const entity = res.locals.body;
-			const param = { id, entity };
+			// const entity = { Status: 0 }
+			const param = { id };
 
-			userService
-				.changePass(param)
+			mediaService
+				.delete(param)
 				.then((data) => {
-					console.log('changePass dataReturn: ', data);
-					res.send(data);
+					if (data && data.status === 1) {
+						const dataOutput = {
+							result: null,
+							success: true,
+							errors: [],
+							messages: [],
+						};
 
-					// recordStartTime.call(res);
-					// loggerHelpers.logInfor(req, res, { data });
+						res.send(dataOutput);
+
+						// recordStartTime.call(res);
+						loggerHelpers.logInfor(req, res, {});
+					} else {
+						throw new ApiErrors.BaseError({
+							statusCode: 202,
+							type: 'deleteError',
+						});
+					}
 				})
-				.catch((err) => {
-					next(err);
+				.catch((error) => {
+					error.dataParams = req.params;
+					next(error);
 				});
 		} catch (error) {
+			error.dataParams = req.params;
 			next(error);
 		}
 	},
-	//   resetPass: (req, res, next) => {
-	//     try {
-	//       // recordStartTime.call(req);
-
-	//       const { id } = req.params
-	//       const entity = req.body
-	//       const param = { id, entity }
-
-	//       userService.resetPass(param).then(data => {
-	//         res.send(data);
-
-	//         // recordStartTime.call(res);
-	//         // loggerHelpers.logInfor(req, res, { data });
-	//       }).catch(err => {
-	//         next(err)
-	//       })
-	//     } catch (error) {
-	//       next(error)
-	//     }
-	//   },
 };

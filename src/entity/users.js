@@ -26,27 +26,27 @@ module.exports = function (sequelize, DataTypes) {
 				allowNull: false,
 				field: 'password',
 			},
-			token: {
+			uuid: {
 				type: DataTypes.STRING(12),
 				allowNull: false,
-				field: 'token',
+				field: 'uuid',
 			},
 			avatar: {
 				type: DataTypes.STRING(12),
-				allowNull: false,
+				allowNull: true,
 				field: 'avatar',
 			},
 			countFriends: {
 				type: DataTypes.BIGINT,
-				allowNull: false,
+				allowNull: true,
 				field: 'count_friends',
 			},
-
-			// status: {
-			// 	type: DataTypes.BOOLEAN,
-			// 	allowNull: false,
-			// 	field: 'status',
-			// },
+			birthday: {
+				type: DataTypes.DATE,
+				defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
+				allowNull: false,
+				field: 'birthday',
+			},
 		},
 		{
 			tableName: 'users',
