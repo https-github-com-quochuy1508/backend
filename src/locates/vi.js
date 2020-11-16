@@ -1,5 +1,6 @@
 import users from './vi-Vi/users';
 import posts from './vi-Vi/posts';
+import comments from './vi-Vi/comments';
 import medias from './vi-Vi/medias';
 
 export default {
@@ -36,4 +37,7 @@ export default {
 	...medias,
 	medias: 'Tệp truyển thông',
 	mediaId: 'Id Tệp',
+
+	// comments
+	...comments,
 };
