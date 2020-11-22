@@ -9,51 +9,59 @@ const DEFAULT_SCHEMA = {
 		label: viMessage.userId,
 		integer: noArguments,
 	}),
-	content: ValidateJoi.createSchemaProp({
+	postId: ValidateJoi.createSchemaProp({
+		number: noArguments,
+		label: viMessage.postId,
+		integer: noArguments,
+	}),
+	path: ValidateJoi.createSchemaProp({
 		string: noArguments,
-		label: viMessage['api.posts.content'],
+		label: viMessage['api.medias.path'],
+	}),
+	type: ValidateJoi.createSchemaProp({
+		string: noArguments,
+		label: viMessage['api.medias.type'],
 	}),
 };
 
 export default {
 	authenCreate: (req, res, next) => {
-		console.log('Validate Create');
-
-		const { userId, content } = req.body; // userId từ local  input data => content
-		const posts = { userId, content };
+		const { userId, postId } = req.body; // userId từ local  input data => content
+		const medias = { userId, postId };
 
 		const SCHEMA = ValidateJoi.assignSchema(DEFAULT_SCHEMA, {
 			userId: {
 				required: noArguments,
 			},
-			content: {
-				min: 20,
-				max: 500,
+			postId: {
 				required: noArguments,
 			},
 		});
 
-		ValidateJoi.validate(posts, SCHEMA)
+		ValidateJoi.validate(medias, SCHEMA)
 			.then((data) => {
 				res.locals.body = data;
 				next();
 			})
 			.catch((error) => next({ ...error, message: 'Định dạng gửi đi không đúng' }));
 	},
-	
 	authenUpdate: (req, res, next) => {
 		console.log('Validate Create');
 
-		const { content } = req.body;
-		const posts = { content };
+		const { userId, postId, path, type } = req.body; // userId từ local  input data => content
+		const medias = { userId, postId, path, type };
 
 		const SCHEMA = ValidateJoi.assignSchema(DEFAULT_SCHEMA, {
-			content: {
-				max: 500,
+			path: {
+				min: 20,
+				max: 100,
+			},
+			type: {
+				max: 50,
 			},
 		});
 
-		ValidateJoi.validate(posts, SCHEMA)
+		ValidateJoi.validate(medias, SCHEMA)
 			.then((data) => {
 				res.locals.body = data;
 				next();
@@ -71,23 +79,26 @@ export default {
 
 		console.log('res.locals: ', res.locals);
 		if (filter) {
-			const { id, content } = JSON.parse(filter);
-			const post = {
+			const { id, userId, postId, path, type } = JSON.parse(filter);
+			const medias = {
 				id,
-				content,
+				userId,
+				postId,
+				path,
+				type,
 			};
 
 			const SCHEMA = {
 				id: ValidateJoi.createSchemaProp({
 					string: noArguments,
-					label: viMessage['api.posts.id'],
+					label: viMessage['api.medias.id'],
 					regex: regexPattern.listIds,
 				}),
 				...DEFAULT_SCHEMA,
 			};
 
 			// console.log('input: ', input);
-			ValidateJoi.validate(post, SCHEMA)
+			ValidateJoi.validate(medias, SCHEMA)
 				.then((data) => {
 					console.log('data: ', data);
 					if (id) {

@@ -54,6 +54,11 @@ router.post('/login', authenticateValidate.authenCreate, async (req, res, next) 
 							success: true,
 							status: 'ok',
 							token,
+							telephone: userInfo.telephone,
+							name: userInfo.name,
+							avatar:
+								user.avatar ||
+								'https://www.dovercourt.org/wp-content/uploads/2019/11/610-6104451_image-placeholder-png-user-profile-placeholder-image-png.jpg',
 							currentAuthority: [],
 							...dataToken,
 						});
@@ -84,7 +89,7 @@ router.post('/login', authenticateValidate.authenCreate, async (req, res, next) 
 				} else {
 					throw new BaseError({
 						statusCode: 200,
-						type: 'userNotFoundError',
+						type: 'UserNotValidated',
 						name: 'Login',
 					});
 				}
