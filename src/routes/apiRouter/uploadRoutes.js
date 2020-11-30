@@ -42,8 +42,6 @@ const readFile = (fileName) =>
 	});
 
 const fileFilter = (req, file, cb) => {
-	console.log('file: ', file);
-	console.log('req: ', req.file);
 	const regex = /^video/;
 	// // console.log("file.mimetype: ", regex.test(file.mimetype));
 	if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png' || regex.test(file.mimetype)) {
@@ -78,8 +76,10 @@ router.post('/uploadfile', upload.single('myFiles'), mediaValidate.authenCreate,
 	} else {
 		const dirPath = path.resolve(file.path).replace(/\\/g, '/');
 		const dirRelativePath = `myFiles${dirPath.split('myFiles')[1]}`;
-		const networkInterfaces = os.networkInterfaces()['wlp3s0'][0]['address'];
-		console.log(networkInterfaces);
+		const networkTemp = os.networkInterfaces()['wlp3s0'] || os.networkInterfaces()['Wi-Fi'];
+		const networkInterfaces = networkTemp[0]['address'];
+
+		console.log(os.networkInterfaces());
 
 		const entity = {
 			userId,
