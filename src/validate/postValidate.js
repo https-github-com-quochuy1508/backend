@@ -27,9 +27,7 @@ export default {
 				required: noArguments,
 			},
 			content: {
-				min: 20,
 				max: 500,
-				required: noArguments,
 			},
 		});
 
@@ -40,7 +38,7 @@ export default {
 			})
 			.catch((error) => next({ ...error, message: 'Định dạng gửi đi không đúng' }));
 	},
-	
+
 	authenUpdate: (req, res, next) => {
 		console.log('Validate Create');
 
