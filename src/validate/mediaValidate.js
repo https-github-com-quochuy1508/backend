@@ -28,6 +28,7 @@ export default {
 	authenCreate: (req, res, next) => {
 		const { userId, postId } = req.body; // userId từ local  input data => content
 		const medias = { userId, postId };
+		console.log(" medias: ",  medias);
 
 		const SCHEMA = ValidateJoi.assignSchema(DEFAULT_SCHEMA, {
 			userId: {
