@@ -27,7 +27,7 @@ export default {
 					{
 						model: users,
 						as: 'users',
-						attributes: ['id', 'telephone'],
+						attributes: ['id', 'name', 'avatar'],
 					},
 					{
 						model: media,
@@ -64,7 +64,7 @@ export default {
 					{
 						model: users,
 						as: 'users',
-						attributes: ['id', 'telephone'],
+						attributes: ['id', 'telephone', 'name'],
 					},
 					{
 						model: media,
