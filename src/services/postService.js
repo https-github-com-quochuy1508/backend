@@ -158,4 +158,40 @@ export default {
 		}
 		return { result: finalResult };
 	},
+
+	delete: async (param) => {
+		let finalResult;
+
+		try {
+			const foundPost = await Model.findOne(posts, {
+				where: {
+					id: param.id,
+				},
+			});
+
+			if (foundPost) {
+				finalResult = await Model.destroy(posts, {
+					where: {
+						id: parseInt(param.id),
+					},
+				}).catch((error) => {
+					throw new ApiErrors.BaseError({
+						statusCode: 202,
+						type: 'deleteError',
+						message: 'Delete không thành công',
+						error,
+					});
+				}); // 1 0
+				console.log('finalResult: ', finalResult);
+			} else {
+				throw new ApiErrors.BaseError({
+					statusCode: 202,
+					type: 'crudNotExisted',
+				});
+			}
+		} catch (error) {
+			ErrorHelpers.errorThrow(error, 'crudError', 'postServices');
+		}
+		return { status: finalResult };
+	},
 };
