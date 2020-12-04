@@ -37,6 +37,8 @@ create table `reports` (
 
 create table `messages` (
 	id int(11) primary key AUTO_INCREMENT,
+    user_one_id int(11),
+    user_two_id int(11),
     content nvarchar(500),
     isBlock boolean
 );
