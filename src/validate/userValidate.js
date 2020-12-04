@@ -32,6 +32,10 @@ const DEFAULT_SCHEMA = {
 		string: noArguments,
 		label: viMessage['api.users.avatar'],
 	}),
+	avatarCover: ValidateJoi.createSchemaProp({
+		string: noArguments,
+		label: viMessage['api.users.avatarCover'],
+	}),
 	uuid: ValidateJoi.createSchemaProp({
 		string: noArguments,
 		label: viMessage['api.users.uuid'],
@@ -50,8 +54,8 @@ export default {
 	authenCreate: (req, res, next) => {
 		console.log('Validate Create: ', req.body);
 
-		const { telephone, name, password, uuid, avatar, countFriends, birthday } = req.body;
-		const user = { telephone, name, password, uuid, avatar, countFriends, birthday };
+		const { telephone, name, password, uuid, avatar, avatarCover, countFriends, birthday } = req.body;
+		const user = { telephone, name, password, uuid, avatar, avatarCover, countFriends, birthday };
 
 		const SCHEMA = ValidateJoi.assignSchema(DEFAULT_SCHEMA, {
 			telephone: {
@@ -88,8 +92,8 @@ export default {
 	authenUpdate: (req, res, next) => {
 		console.log('Validate Create');
 
-		const { telephone, name, password, uuid, avatar, countFriends, birthday } = req.body;
-		const user = { telephone, name, password, uuid, avatar, countFriends, birthday };
+		const { telephone, name, password, uuid, avatar, avatarCover, countFriends, birthday } = req.body;
+		const user = { telephone, name, password, uuid, avatar, avatarCover, countFriends, birthday };
 
 		const SCHEMA = ValidateJoi.assignSchema(DEFAULT_SCHEMA, {
 			password: {

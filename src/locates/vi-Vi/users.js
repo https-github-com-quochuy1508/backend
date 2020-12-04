@@ -8,6 +8,7 @@ export default {
 	'api.users.name': 'Tên đầy đủ',
 	'api.users.uuid': 'Mã thiết bị',
 	'api.users.avatar': 'Ảnh đại diện',
+	'api.users.avatarCover': 'Ảnh bìa',
 	'api.users.countFriends': 'Số lương bạn bè',
 	'api.users.birthday': 'Ngày sinh',
 };
