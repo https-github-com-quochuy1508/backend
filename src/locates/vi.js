@@ -3,6 +3,7 @@ import posts from './vi-Vi/posts';
 import comments from './vi-Vi/comments';
 import medias from './vi-Vi/medias';
 import friends from './vi-Vi/friends';
+import blacklist from './vi-Vi/blacklist';
 
 export default {
 	// Định nghĩa thông tin chung cho phần thông báo
@@ -44,4 +45,9 @@ export default {
 
 	// friends
 	...friends,
+	
+	// blacklist
+	...blacklist,
+	blacklist: 'Danh sạch đen user',
+	blacklistId: 'Id danh sách đen',
 };

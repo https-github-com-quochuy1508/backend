@@ -1,5 +1,5 @@
 export default (models) => {
-	const { users, posts, media, comments, likes, friends } = models;
+	const { users, posts, media, comments, likes, friends, blacklist } = models;
 
 	// MEDIA
 	posts.belongsTo(users, { as: 'users', foreignKey: 'userId' });
@@ -19,4 +19,8 @@ export default (models) => {
 	
 	// COMMENT
 	friends.belongsTo(users, { as: 'users', foreignKey: 'userId' });
+	
+	// BLACKLIST
+	blacklist.belongsTo(users, { as: 'userOne', foreignKey: 'userOneId' });
+	blacklist.belongsTo(users, { as: 'userTwo', foreignKey: 'userTwoId' });
 };
