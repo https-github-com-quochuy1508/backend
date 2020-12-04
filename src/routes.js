@@ -5,6 +5,7 @@ import postRoutes from './routes/apiRouter/postRoutes';
 import commentRoutes from './routes/apiRouter/commentRoutes';
 import likeRoutes from './routes/apiRouter/likeRoutes';
 import uploadRoutes from './routes/apiRouter/uploadRoutes';
+import blacklistRoutes from './routes/apiRouter/blacklistRoutes';
 
 const router = Router();
 
@@ -20,5 +21,6 @@ router.use('/posts', postRoutes);
 router.use('/comments', commentRoutes);
 router.use('/upload', uploadRoutes);
 router.use('/likes', likeRoutes);
+router.use('/blacklist', blacklistRoutes);
 
 export default router;
