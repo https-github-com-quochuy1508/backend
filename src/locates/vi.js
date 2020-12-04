@@ -2,6 +2,7 @@ import users from './vi-Vi/users';
 import posts from './vi-Vi/posts';
 import comments from './vi-Vi/comments';
 import medias from './vi-Vi/medias';
+import friends from './vi-Vi/friends';
 
 export default {
 	// Định nghĩa thông tin chung cho phần thông báo
@@ -40,4 +41,7 @@ export default {
 
 	// comments
 	...comments,
+
+	// friends
+	...friends,
 };

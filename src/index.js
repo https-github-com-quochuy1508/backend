@@ -50,35 +50,35 @@ app.use(json);
 
 app.use('/web', webRoutes);
 
-app.use(
-	expressJwt({
-		secret: process.env.JWT_SECRET,
-		requestProperty: 'auth',
-		credentialsRequired: false,
-		getToken: function fromHeaderOrQuerystring(req) {
-			if (req.headers['x-auth-key']) {
-				return req.headers['x-auth-key'];
-			}
-			if (req.query && req.query.token) {
-				return req.query.token;
-			}
-			return null;
-		},
-	}).unless({ path: ['/authenticate'] })
-);
+// app.use(
+// 	expressJwt({
+// 		secret: process.env.JWT_SECRET,
+// 		requestProperty: 'auth',
+// 		credentialsRequired: false,
+// 		getToken: function fromHeaderOrQuerystring(req) {
+// 			if (req.headers['x-auth-key']) {
+// 				return req.headers['x-auth-key'];
+// 			}
+// 			if (req.query && req.query.token) {
+// 				return req.query.token;
+// 			}
+// 			return null;
+// 		},
+// 	}).unless({ path: ['/authenticate'] })
+// );
 
-app.all('/api/*', (req, res, next) => {
-	if (!req.auth) {
-		const err = new Error('Not Authorized');
+// app.all('/api/*', (req, res, next) => {
+// 	if (!req.auth) {
+// 		const err = new Error('Not Authorized');
 
-		err.code = 202;
-		err.status = 401;
-		err.message = 'Bạn chưa đăng nhập';
+// 		err.code = 202;
+// 		err.status = 401;
+// 		err.message = 'Bạn chưa đăng nhập';
 
-		throw err;
-	}
-	next();
-});
+// 		throw err;
+// 	}
+// 	next();
+// });
 
 app.use('/auth', authenticateRoutes); // path xử lý login create user
 app.use('/api', ApiRouter); // call api cần token
