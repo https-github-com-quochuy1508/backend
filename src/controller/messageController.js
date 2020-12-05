@@ -132,7 +132,7 @@ export default {
 		  // const entity = { Status: 0 }
 		  const param = { id };
   
-		  friendService
+		  messageService
 			.delete(param)
 			.then((data) => {
 			  if (data && data.status === 1) {

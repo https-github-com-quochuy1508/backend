@@ -7,7 +7,7 @@ import preCheckHelpers, { TYPE_CHECK } from '../helpers/preCheckHelpers';
 import filterHelpers from '../helpers/filterHelpers';
 import * as ApiErrors from '../errors';
 
-const { message } = models;
+const { messages } = models;
 
 export default {
 	// get_list: async (param) => {
@@ -50,7 +50,7 @@ export default {
 
 			console.log('entity: ', entity);
 
-			finalResult = await Model.create(message, entity).catch((err) => {
+			finalResult = await Model.create(messages, entity).catch((err) => {
 				ErrorHelpers.errorThrow(err, 'crudError', 'commentServices');
 			});
 		} catch (error) {
@@ -111,40 +111,40 @@ export default {
 	// 	return { result: finalResult };
 	// },
 
-	// delete: async (param) => {
-	// 	let finalResult;
+	delete: async (param) => {
+		let finalResult;
 
-	// 	try {
-	// 		const foundFriend = await Model.findOne(friends, {
-	// 			where: {
-	// 				id: param.id,
-	// 			},
-	// 		});
+		try {
+			const foundMessage = await Model.findOne(messages, {
+				where: {
+					id: param.id,
+				},
+			});
 
-	// 		if (foundFriend) {
-	// 			finalResult = await Model.destroy(friends, {
-	// 				where: {
-	// 					id: parseInt(param.id),
-	// 				},
-	// 			}).catch((error) => {
-	// 				throw new ApiErrors.BaseError({
-	// 					statusCode: 202,
-	// 					type: 'deleteError',
-	// 					message: 'Delete không thành công',
-	// 					error,
-	// 				});
-	// 			}); // 1 0
-	// 			console.log('finalResult: ', finalResult);
-	// 		} else {
-	// 			throw new ApiErrors.BaseError({
-	// 				statusCode: 202,
-	// 				type: 'crudNotExisted',
-	// 			});
-	// 		}
-	// 	} catch (error) {
-	// 		ErrorHelpers.errorThrow(error, 'crudError', 'postServices');
-	// 	}
-	// 	return { status: finalResult };
-	// },
+			if (foundMessage) {
+				finalResult = await Model.destroy(messages, {
+					where: {
+						id: parseInt(param.id),
+					},
+				}).catch((error) => {
+					throw new ApiErrors.BaseError({
+						statusCode: 202,
+						type: 'deleteError',
+						message: 'Delete không thành công',
+						error,
+					});
+				}); // 1 0
+				console.log('finalResult: ', finalResult);
+			} else {
+				throw new ApiErrors.BaseError({
+					statusCode: 202,
+					type: 'crudNotExisted',
+				});
+			}
+		} catch (error) {
+			ErrorHelpers.errorThrow(error, 'crudError', 'postServices');
+		}
+		return { status: finalResult };
+	},
 
 };
