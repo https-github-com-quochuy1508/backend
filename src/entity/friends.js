@@ -2,7 +2,7 @@
 
 module.exports = function (sequelize, DataTypes) {
 	return sequelize.define(
-		'posts',
+		'friends',
 		{
 			id: {
 				type: DataTypes.BIGINT,
@@ -10,26 +10,31 @@ module.exports = function (sequelize, DataTypes) {
 				primaryKey: true,
 				autoIncrement: true,
 				field: 'id',
-			},
+            },
 			userId: {
 				type: DataTypes.BIGINT,
 				allowNull: false,
 				field: 'user_id',
+            },
+            friendId: {
+				type: DataTypes.BIGINT,
+				allowNull: false,
+				field: 'friend_id',
 			},
-			content: {
-				type: DataTypes.STRING(500),
-				allowNull: true,
-				field: 'content',
-			},
-			createAt: {
+            createAt: {
 				type: DataTypes.DATE,
                 allowNull: false,
                 defaultValue: DataTypes.NOW,
 				field: 'create_at',
             },
+            status: {
+				type: DataTypes.INTEGER,
+				allowNull: false,
+				field: 'status',
+            },
 		},
 		{
-			tableName: 'posts',
+			tableName: 'friends',
 			timestamps: false,
 		}
 	);

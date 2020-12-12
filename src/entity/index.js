@@ -11,6 +11,9 @@ const modules = [
 	require('./comments'),
 	require('./likes'),
 	require('./blacklist'),
+	require('./friends'),
+	require('./reports'),
+	require('./messages'),
 ];
 
 // console.log("modules: ", modules);

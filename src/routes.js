@@ -5,7 +5,10 @@ import postRoutes from './routes/apiRouter/postRoutes';
 import commentRoutes from './routes/apiRouter/commentRoutes';
 import likeRoutes from './routes/apiRouter/likeRoutes';
 import uploadRoutes from './routes/apiRouter/uploadRoutes';
+import friendRoutes from './routes/apiRouter/friendRoutes';
 import blacklistRoutes from './routes/apiRouter/blacklistRoutes';
+import reportRoutes from './routes/apiRouter/reportRoutes';
+import messageRoutes from './routes/apiRouter/messageRoutes';
 
 const router = Router();
 
@@ -20,7 +23,10 @@ router.use('/users', userRoutes);
 router.use('/posts', postRoutes);
 router.use('/comments', commentRoutes);
 router.use('/upload', uploadRoutes);
+router.use('/friends', friendRoutes);
 router.use('/likes', likeRoutes);
 router.use('/blacklist', blacklistRoutes);
+router.use('/reports', reportRoutes);
+router.use('/messages', messageRoutes);
 
 export default router;
