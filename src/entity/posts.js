@@ -21,12 +21,12 @@ module.exports = function (sequelize, DataTypes) {
 				allowNull: true,
 				field: 'content',
 			},
-			createAt: {
+			createdAt: {
 				type: DataTypes.DATE,
 				allowNull: false,
 				defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
 				field: 'create_at',
-            },
+			},
 		},
 		{
 			tableName: 'posts',
