@@ -5,9 +5,11 @@ create table `users` (
 	id int(11) primary key AUTO_INCREMENT,
     name nvarchar(30),
     telephone varchar(12),
-    password varchar(12),
-    token varchar(100),
+    password varchar(100),
+    uuid varchar(100),
     avatar varchar(100),
+    avatar_cover varchar(100),
+    birthday datetime,
     count_friends int(11)
 );
 create index user_index on users(name, telephone);
@@ -46,7 +48,8 @@ create table `messages` (
 create table `posts` (
 	id int(11) primary key AUTO_INCREMENT,
     user_id int(11),
-    content nvarchar(500)
+    content nvarchar(500),
+    create_at datetime
 );
 
 create table `media` (

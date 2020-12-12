@@ -64,7 +64,7 @@ export default {
 
 		res.locals.sort = sort
 			? JSON.parse(sort).map((e, i) => (i === 0 ? sequelize.literal(`\`${e}\``) : e))
-			: ['id', 'asc'];
+			: ['id', 'desc'];
 		res.locals.range = range ? JSON.parse(range) : [0, 49];
 
 		console.log('res.locals: ', res.locals);

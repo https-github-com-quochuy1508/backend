@@ -7,6 +7,7 @@ import preCheckHelpers, { TYPE_CHECK } from '../helpers/preCheckHelpers';
 import filterHelpers from '../helpers/filterHelpers';
 import * as ApiErrors from '../errors';
 import { Sequelize } from 'sequelize';
+const { QueryTypes } = require('sequelize');
 
 const { users, posts, media, comments, likes } = models;
 
@@ -15,17 +16,24 @@ export default {
 		console.log('param: ', param);
 		let finalResult;
 		try {
-			const { filter, range, sort } = param; // vua viet o validate
+			const { filter, range, sort, auth } = param; // vua viet o validate
+			let userId = auth.userId;
+
 			let whereFilter = filterHelpers.makeStringFilterRelatively(['content'], filter);
 			console.log('filter: ', whereFilter);
 			const perPage = range[1] - range[0] + 1;
 			const page = Math.floor(range[0] / perPage);
 
+			// token, postId, ton tai postId, userId
 			const result = await Model.findAndCountAll(posts, {
 				where: whereFilter,
 				order: [sort],
 				attributes: { 
-					include: [[Sequelize.fn("COUNT", Sequelize.col("likes.id")), "likeCount"]] 
+					include: [
+						[Sequelize.fn("COUNT", Sequelize.col("likes.id")), "likeCount"], 
+						[Sequelize.fn("COUNT", Sequelize.col("comments.id")), "commentCount"],
+						// [Sequelize.fn("COUNT", Sequelize.col("comments.id")), "isLike"]
+					],
 				},
 				include: [
 					{
