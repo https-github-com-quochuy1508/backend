@@ -7,6 +7,7 @@ import preCheckHelpers, { TYPE_CHECK } from '../helpers/preCheckHelpers';
 import filterHelpers from '../helpers/filterHelpers';
 import * as ApiErrors from '../errors';
 import { Sequelize } from 'sequelize';
+import { sequelize } from '../db'
 const { QueryTypes } = require('sequelize');
 
 const { users, posts, media, comments, likes } = models;
@@ -32,7 +33,7 @@ export default {
 					include: [
 						[Sequelize.fn("COUNT", Sequelize.col("likes.id")), "likeCount"], 
 						[Sequelize.fn("COUNT", Sequelize.col("comments.id")), "commentCount"],
-						// [Sequelize.fn("COUNT", Sequelize.col("comments.id")), "isLike"]
+						[Sequelize.where(Sequelize.col('likes.user_id'), '=', userId), "isLike"]
 					],
 				},
 				include: [
