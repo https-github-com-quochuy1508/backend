@@ -2,7 +2,7 @@
 
 module.exports = function (sequelize, DataTypes) {
 	return sequelize.define(
-		'posts',
+		'likes',
 		{
 			id: {
 				type: DataTypes.BIGINT,
@@ -16,20 +16,14 @@ module.exports = function (sequelize, DataTypes) {
 				allowNull: false,
 				field: 'user_id',
 			},
-			content: {
-				type: DataTypes.STRING(500),
-				allowNull: true,
-				field: 'content',
+			postId: {
+				type: DataTypes.BIGINT,
+				allowNull: false,
+				field: 'post_id',
 			},
-			createAt: {
-				type: DataTypes.DATE,
-                allowNull: false,
-                defaultValue: DataTypes.NOW,
-				field: 'create_at',
-            },
 		},
 		{
-			tableName: 'posts',
+			tableName: 'likes',
 			timestamps: false,
 		}
 	);

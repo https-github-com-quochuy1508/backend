@@ -8,50 +8,59 @@ const DEFAULT_SCHEMA = {
 		number: noArguments,
 		label: viMessage.userId,
 		integer: noArguments,
+    }),
+    friendId: ValidateJoi.createSchemaProp({
+		number: noArguments,
+		label: viMessage['api.friends.friendId'],
+		integer: noArguments,
 	}),
-	content: ValidateJoi.createSchemaProp({
-		string: noArguments,
-		label: viMessage['api.posts.content'],
+	status: ValidateJoi.createSchemaProp({
+		number: noArguments,
+		label: viMessage['api.friends.status'],
+		integer: noArguments,
 	}),
 };
 
 export default {
-	authenCreate: (req, res, next) => {
-		console.log('Validate Create');
+	friendCreate: (req, res, next) => {
+		console.log('Validate Create Friend');
 
-		const { userId, content } = req.body; // userId từ local  input data => content
-		const posts = { userId, content };
+        const { userId, friendId, status } = req.body; // userId từ local  input data => content
+		const friends = { userId, friendId, status };
 
 		const SCHEMA = ValidateJoi.assignSchema(DEFAULT_SCHEMA, {
 			userId: {
 				required: noArguments,
+            },
+            friendId: {
+				required: noArguments,
 			},
-			content: {
-				max: 500,
+			status: {
+				required: noArguments,
 			},
 		});
 
-		ValidateJoi.validate(posts, SCHEMA)
+		ValidateJoi.validate(friends, SCHEMA)
 			.then((data) => {
 				res.locals.body = data;
 				next();
 			})
 			.catch((error) => next({ ...error, message: 'Định dạng gửi đi không đúng' }));
-	},
+    },
 
-	authenUpdate: (req, res, next) => {
-		console.log('Validate Create');
+	friendUpdate: (req, res, next) => {
+		console.log('Validate Update Friend');
 
-		const { content } = req.body;
-		const posts = { content };
+		const { status } = req.body;
+		const friends = { status };
 
 		const SCHEMA = ValidateJoi.assignSchema(DEFAULT_SCHEMA, {
-			content: {
-				max: 500,
+			status: {
+				required: noArguments,
 			},
 		});
 
-		ValidateJoi.validate(posts, SCHEMA)
+		ValidateJoi.validate(friends, SCHEMA)
 			.then((data) => {
 				res.locals.body = data;
 				next();
@@ -59,40 +68,27 @@ export default {
 			.catch((error) => next({ ...error, message: 'Định dạng gửi đi không đúng' }));
 	},
 
-	authenFilter: (req, res, next) => {
+	friendFilter: (req, res, next) => {
 		const { filter, sort, range } = req.query;
 
 		res.locals.sort = sort
 			? JSON.parse(sort).map((e, i) => (i === 0 ? sequelize.literal(`\`${e}\``) : e))
-			: ['id', 'desc'];
+			: ['id', 'asc'];
 		res.locals.range = range ? JSON.parse(range) : [0, 49];
 
 		console.log('res.locals: ', res.locals);
+
 		if (filter) {
-			const { id, content } = JSON.parse(filter);
-			const post = {
-				id,
-				content,
-			};
+			const { status } = JSON.parse(filter);
+			const friend = { status };
 
-			const SCHEMA = {
-				id: ValidateJoi.createSchemaProp({
-					string: noArguments,
-					label: viMessage['api.posts.id'],
-					regex: regexPattern.listIds,
-				}),
-				...DEFAULT_SCHEMA,
-			};
+			const SCHEMA = { ...DEFAULT_SCHEMA };
 
-			// console.log('input: ', input);
-			ValidateJoi.validate(post, SCHEMA)
+			ValidateJoi.validate(friend, SCHEMA)
 				.then((data) => {
 					console.log('data: ', data);
-					if (id) {
-						ValidateJoi.transStringToArray(data, 'id');
-					}
-					// if (wardsId) {
-					// 	ValidateJoi.transStringToArray(data, 'wardsId');
+					// if (postId) {
+					// 		ValidateJoi.transStringToArray(data, 'id');
 					// }
 
 					res.locals.filter = data;

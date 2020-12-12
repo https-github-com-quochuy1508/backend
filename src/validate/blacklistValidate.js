@@ -4,14 +4,23 @@ import { sequelize } from '../db/db';
 import regexPattern from '../utils/regexPattern';
 
 const DEFAULT_SCHEMA = {
-	userId: ValidateJoi.createSchemaProp({
+	userOneId: ValidateJoi.createSchemaProp({
 		number: noArguments,
-		label: viMessage.userId,
+		label: viMessage['api.blacklist.userOneId'],
 		integer: noArguments,
 	}),
-	content: ValidateJoi.createSchemaProp({
+	userTwoId: ValidateJoi.createSchemaProp({
+		number: noArguments,
+		label: viMessage['api.blacklist.userTwoId'],
+		integer: noArguments,
+	}),
+	createdAt: ValidateJoi.createSchemaProp({
 		string: noArguments,
-		label: viMessage['api.posts.content'],
+		label: viMessage['api.blacklist.createAt'],
+	}),
+	status: ValidateJoi.createSchemaProp({
+		boolean: noArguments,
+		label: viMessage['api.blacklist.status'],
 	}),
 };
 
@@ -19,19 +28,22 @@ export default {
 	authenCreate: (req, res, next) => {
 		console.log('Validate Create');
 
-		const { userId, content } = req.body; // userId từ local  input data => content
-		const posts = { userId, content };
+		const { userOneId, userTwoId, createdAt, status } = req.body; // userId từ local  input data => content
+		const blacklist = { userOneId, userTwoId, createdAt, status };
 
 		const SCHEMA = ValidateJoi.assignSchema(DEFAULT_SCHEMA, {
-			userId: {
+			userOneId: {
 				required: noArguments,
 			},
-			content: {
-				max: 500,
+			userTwoId: {
+				required: noArguments,
+			},
+			status: {
+				required: noArguments,
 			},
 		});
 
-		ValidateJoi.validate(posts, SCHEMA)
+		ValidateJoi.validate(blacklist, SCHEMA)
 			.then((data) => {
 				res.locals.body = data;
 				next();
@@ -42,16 +54,12 @@ export default {
 	authenUpdate: (req, res, next) => {
 		console.log('Validate Create');
 
-		const { content } = req.body;
-		const posts = { content };
+		const { status } = req.body;
+		const blacklist = { status };
 
-		const SCHEMA = ValidateJoi.assignSchema(DEFAULT_SCHEMA, {
-			content: {
-				max: 500,
-			},
-		});
+		const SCHEMA = ValidateJoi.assignSchema(DEFAULT_SCHEMA, {});
 
-		ValidateJoi.validate(posts, SCHEMA)
+		ValidateJoi.validate(blacklist, SCHEMA)
 			.then((data) => {
 				res.locals.body = data;
 				next();
@@ -64,7 +72,7 @@ export default {
 
 		res.locals.sort = sort
 			? JSON.parse(sort).map((e, i) => (i === 0 ? sequelize.literal(`\`${e}\``) : e))
-			: ['id', 'desc'];
+			: ['id', 'asc'];
 		res.locals.range = range ? JSON.parse(range) : [0, 49];
 
 		console.log('res.locals: ', res.locals);
@@ -78,7 +86,7 @@ export default {
 			const SCHEMA = {
 				id: ValidateJoi.createSchemaProp({
 					string: noArguments,
-					label: viMessage['api.posts.id'],
+					label: viMessage.blacklistId,
 					regex: regexPattern.listIds,
 				}),
 				...DEFAULT_SCHEMA,

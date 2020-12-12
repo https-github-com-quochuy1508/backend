@@ -2,7 +2,7 @@
 
 module.exports = function (sequelize, DataTypes) {
 	return sequelize.define(
-		'posts',
+		'media',
 		{
 			id: {
 				type: DataTypes.BIGINT,
@@ -16,20 +16,24 @@ module.exports = function (sequelize, DataTypes) {
 				allowNull: false,
 				field: 'user_id',
 			},
-			content: {
-				type: DataTypes.STRING(500),
-				allowNull: true,
-				field: 'content',
+			postId: {
+				type: DataTypes.BIGINT,
+				allowNull: false,
+				field: 'post_id',
 			},
-			createAt: {
-				type: DataTypes.DATE,
-                allowNull: false,
-                defaultValue: DataTypes.NOW,
-				field: 'create_at',
-            },
+			path: {
+				type: DataTypes.STRING(100),
+				allowNull: false,
+				field: 'path',
+			},
+			type: {
+				type: DataTypes.STRING(50),
+				allowNull: false,
+				field: 'type',
+			},
 		},
 		{
-			tableName: 'posts',
+			tableName: 'media',
 			timestamps: false,
 		}
 	);

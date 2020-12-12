@@ -6,8 +6,9 @@ export default {
 	'api.users.newPassword': 'Mật khẩu mới',
 	'api.users.newPasswordConfirm': 'Mật khẩu mới xác thực',
 	'api.users.name': 'Tên đầy đủ',
-	'api.users.token': 'Token user',
+	'api.users.uuid': 'Mã thiết bị',
 	'api.users.avatar': 'Ảnh đại diện',
+	'api.users.avatarCover': 'Ảnh bìa',
 	'api.users.countFriends': 'Số lương bạn bè',
 	'api.users.birthday': 'Ngày sinh',
 };

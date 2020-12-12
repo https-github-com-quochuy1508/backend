@@ -6,66 +6,33 @@ import models from '../entity/index';
 import preCheckHelpers, { TYPE_CHECK } from '../helpers/preCheckHelpers';
 import filterHelpers from '../helpers/filterHelpers';
 import * as ApiErrors from '../errors';
-import { Sequelize } from 'sequelize';
-import { sequelize } from '../db'
-const { QueryTypes } = require('sequelize');
 
-const { users, posts, media, comments, likes } = models;
+const { users, posts, media } = models;
 
 export default {
 	get_list: async (param) => {
 		console.log('param: ', param);
 		let finalResult;
 		try {
-			const { filter, range, sort, auth } = param; // vua viet o validate
-			let userId = auth.userId;
-
-			let whereFilter = filterHelpers.makeStringFilterRelatively(['content'], filter);
+			const { filter, range, sort } = param; // vua viet o validate
+			let whereFilter = filterHelpers.makeStringFilterRelatively(['path'], filter);
 			console.log('filter: ', whereFilter);
 			const perPage = range[1] - range[0] + 1;
 			const page = Math.floor(range[0] / perPage);
 
-			// token, postId, ton tai postId, userId
-			const result = await Model.findAndCountAll(posts, {
+			const result = await Model.findAndCountAll(media, {
 				where: whereFilter,
 				order: [sort],
-				attributes: { 
-					include: [
-						[Sequelize.fn("COUNT", Sequelize.col("likes.id")), "likeCount"], 
-						[Sequelize.fn("COUNT", Sequelize.col("comments.id")), "commentCount"],
-						[Sequelize.where(Sequelize.col('likes.user_id'), '=', userId), "isLike"]
-					],
-				},
 				include: [
 					{
 						model: users,
 						as: 'users',
-						attributes: ['id', 'name', 'avatar'],
 					},
 					{
-						model: media,
-						as: 'media',
-						attributes: ['id', 'path', 'type'],
+						model: posts,
+						as: 'posts',
 					},
-					{
-						model: comments,
-						as: 'comments', 
-						attributes: ['content'],
-						include: [
-							{
-								model: users,
-								as: 'users',
-								attributes: ['id', 'name', 'avatar'],
-							}
-						]
-					},
-					{
-						model: likes, 
-						as: 'likes',
-						attributes: []
-					}
 				],
-				group: ['posts.id']
 			}).catch((error) => {
 				ErrorHelpers.errorThrow(error, 'getListError', 'postServices');
 			});
@@ -89,20 +56,8 @@ export default {
 
 			const whereFilter = { id };
 
-			const result = await Model.findOne(posts, {
+			const result = await Model.findOne(media, {
 				where: whereFilter,
-				include: [
-					{
-						model: users,
-						as: 'users',
-						attributes: ['id', 'telephone', 'name'],
-					},
-					{
-						model: media,
-						as: 'media',
-						attributes: ['id', 'path', 'type'],
-					},
-				],
 			}).catch((error) => {
 				ErrorHelpers.errorThrow(error, 'getInfoError', 'UserServices');
 			});
@@ -129,7 +84,7 @@ export default {
 
 			console.log('entity: ', entity);
 
-			finalResult = await Model.create(posts, entity).catch((err) => {
+			finalResult = await Model.create(media, entity).catch((err) => {
 				ErrorHelpers.errorThrow(error, 'crudError', 'postServices');
 			});
 		} catch (error) {
@@ -144,14 +99,14 @@ export default {
 		try {
 			let { entity } = param;
 
-			const foundPost = await Model.findOne(posts, {
+			const foundPost = await Model.findOne(media, {
 				where: {
 					id: param.id,
 				},
 			});
 
 			if (foundPost) {
-				await Model.update(posts, entity, {
+				await Model.update(media, entity, {
 					where: {
 						id: parseInt(param.id),
 					},
@@ -164,7 +119,7 @@ export default {
 					});
 				}); // 1 0
 
-				finalResult = await Model.findOne(posts, {
+				finalResult = await Model.findOne(media, {
 					where: {
 						id: parseInt(param.id),
 					},
@@ -189,19 +144,18 @@ export default {
 		}
 		return { result: finalResult };
 	},
-
 	delete: async (param) => {
 		let finalResult;
 
 		try {
-			const foundPost = await Model.findOne(posts, {
+			const foundPost = await Model.findOne(media, {
 				where: {
 					id: param.id,
 				},
 			});
 
 			if (foundPost) {
-				finalResult = await Model.destroy(posts, {
+				finalResult = await Model.destroy(media, {
 					where: {
 						id: parseInt(param.id),
 					},
@@ -209,7 +163,7 @@ export default {
 					throw new ApiErrors.BaseError({
 						statusCode: 202,
 						type: 'deleteError',
-						message: 'Delete không thành công',
+						message: 'Update không thành công',
 						error,
 					});
 				}); // 1 0

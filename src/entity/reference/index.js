@@ -1,51 +1,36 @@
 export default (models) => {
-	const { users, posts } = models;
+	const { users, posts, media, comments, likes, friends, blacklist, reports, messages } = models;
 
-	// users
-	// users.belongsToMany(courses, {
-	//   through: userCourse,
-	//   foreignKey: "usersId",
-	//   as: "courses",
-	// });
+	// MEDIA
 	posts.belongsTo(users, { as: 'users', foreignKey: 'userId' });
+	posts.hasMany(media, { as: 'media', foreignKey: 'postId' });
+	posts.hasMany(likes, { as: 'likes', foreignKey: 'postId' });
+	posts.hasMany(comments, { as: 'comments', foreignKey: 'postId' });
 
-	// // topics
-	// topics.hasMany(categories, { as: "categories", foreignKey: "topicsId" });
+	// MEDIA
+	media.belongsTo(users, { as: 'users', foreignKey: 'userId' });
+	media.belongsTo(posts, { as: 'posts', foreignKey: 'postId' });
 
-	// // categories
-	// categories.belongsTo(topics, { as: "topics", foreignKey: "topicsId" });
-	// categories.hasMany(courses, { as: "courses", foreignKey: "categoriesId" });
+	// COMMENT
+	comments.belongsTo(posts, { as: 'posts', foreignKey: 'postId' });
+	comments.belongsTo(users, { as: 'users', foreignKey: 'userId' });
 
-	// // course
-	// courses.hasMany(weeks, { as: "weeks", foreignKey: "coursesId" });
+	// LIKE
+	likes.belongsTo(posts, { as: 'posts', foreignKey: 'postId' });
+	likes.belongsTo(users, { as: 'users', foreignKey: 'userId' });
+	
+	// COMMENT
+	friends.belongsTo(users, { as: 'users', foreignKey: 'userId' });
 
-	// courses.belongsTo(categories, {
-	//   as: "categories",
-	//   foreignKey: "categoriesId",
-	// });
-	// courses.belongsTo(skills, { foreignKey: "skillsId", as: "skills" });
-	// courses.belongsTo(users, { foreignKey: "creatorsId", as: "creators" });
-	// courses.belongsTo(languages, { foreignKey: "languagesId", as: "languages" });
-	// courses.belongsTo(jobs, { foreignKey: "jobsId", as: "jobs" });
-	// courses.belongsToMany(users, {
-	//   through: userCourse,
-	//   foreignKey: "coursesId",
-	//   as: "users",
-	// });
+	// BLACKLIST
+	blacklist.belongsTo(users, { as: 'userOne', foreignKey: 'userOneId' });
+	blacklist.belongsTo(users, { as: 'userTwo', foreignKey: 'userTwoId' });
 
-	// // // courseWeeks
-	// // courseWeeks.belongsTo(weeks, { as: "weeks", foreignKey: "weeksId" });
-	// // courseWeeks.belongsTo(courses, { as: "courses", foreignKey: "coursesId" });
+	// REPORT
+	reports.belongsTo(posts, { as: 'posts', foreignKey: 'postId' });
+	reports.belongsTo(users, { as: 'users', foreignKey: 'userId' });
 
-	// //weeks
-	// // weeks.hasMany(courseWeeks, { as: "courseWeeks", foreignKey: "weeksId" });
-	// weeks.hasMany(videoWeek, { as: "videoWeek", foreignKey: "weeksId" });
-	// weeks.belongsTo(courses, { foreignKey: "coursesId", as: "courses" });
-
-	// //videoWeek
-	// videoWeek.belongsTo(weeks, { as: "weeks", foreignKey: "weeksId" });
-
-	// // userCourse
-	// userCourse.belongsTo(users, { as: "users", foreignKey: "usersId" });
-	// userCourse.belongsTo(courses, { as: "courses", foreignKey: "coursesId" });
+	// MESSAGE
+	messages.belongsTo(users, { as: 'userOne', foreignKey: 'userOneId' });
+	messages.belongsTo(users, { as: 'userTwo', foreignKey: 'userTwoId' });
 };

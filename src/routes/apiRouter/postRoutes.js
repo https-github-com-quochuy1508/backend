@@ -10,5 +10,6 @@ router.get('/', postValidate.authenFilter, postController.get_list);
 router.post('/', postValidate.authenCreate, postController.create);
 router.put('/:id', postValidate.authenUpdate, postController.update);
 router.get('/:id', postController.get_one);
-// router.get("/get/all", userCourseController.get_all);
+router.delete("/:id",postController.delete);
+
 export default router;

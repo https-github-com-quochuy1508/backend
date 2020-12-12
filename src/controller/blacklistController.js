@@ -1,4 +1,4 @@
-import postService from '../services/postService';
+import blacklistService from '../services/blacklistService';
 import loggerHelpers from '../helpers/loggerHelpers';
 // import { recordStartTime } from "../utils/loggerFormat";
 // import { codeMessage } from "../utils";
@@ -18,7 +18,7 @@ export default {
 				auth: req.auth,
 			};
 
-			postService
+			blacklistService
 				.get_list(param)
 				.then((data) => {
 					const dataOutput = {
@@ -60,7 +60,7 @@ export default {
 			const param = { id };
 
 			// console.log("postService param: ", param)
-			postService
+			blacklistService
 				.get_one(param)
 				.then((data) => {
 					res.send(data);
@@ -86,7 +86,7 @@ export default {
 			const entity = res.locals.body;
 			const param = { entity };
 
-			postService
+			blacklistService
 				.create(param)
 				.then((data) => {
 					if (data && data.result) {
@@ -127,7 +127,7 @@ export default {
 			// const entity = req.body
 			const param = { id, entity };
 
-			postService
+			blacklistService
 				.update(param)
 				.then((data) => {
 					if (data && data.result) {
@@ -165,93 +165,43 @@ export default {
 			next(error);
 		}
 	},
-	
+
 	delete: (req, res, next) => {
-	  // recordStartTime.call(req);
-	  try {
-	    const { id } = req.params;
-	    // const entity = { Status: 0 }
-	    const param = { id };
+		// recordStartTime.call(req);
+		try {
+			const { id } = req.params;
+			// const entity = { Status: 0 }
+			const param = { id };
 
-	    postService
-	      .delete(param)
-	      .then((data) => {
-	        if (data && data.status === 1) {
-	          const dataOutput = {
-	            result: null,
-	            success: true,
-	            errors: [],
-	            messages: [],
-	          };
+			blacklistService
+				.delete(param)
+				.then((data) => {
+					if (data && data.status === 1) {
+						const dataOutput = {
+							result: null,
+							success: true,
+							errors: [],
+							messages: [],
+						};
 
-	          res.send(dataOutput);
+						res.send(dataOutput);
 
-	          // recordStartTime.call(res);
-	          loggerHelpers.logInfor(req, res, {});
-	        } else {
-	          throw new ApiErrors.BaseError({
-	            statusCode: 202,
-	            type: "deleteError",
-	          });
-	        }
-	      })
-	      .catch((error) => {
-	        error.dataParams = req.params;
-	        next(error);
-	      });
-	  } catch (error) {
-	    error.dataParams = req.params;
-	    next(error);
-	  }
+						// recordStartTime.call(res);
+						loggerHelpers.logInfor(req, res, {});
+					} else {
+						throw new ApiErrors.BaseError({
+							statusCode: 202,
+							type: 'deleteError',
+						});
+					}
+				})
+				.catch((error) => {
+					error.dataParams = req.params;
+					next(error);
+				});
+		} catch (error) {
+			error.dataParams = req.params;
+			next(error);
+		}
 	},
-
-	// get_all: (req, res, next) => {
-	//   try {
-	//     // recordStartTime.call(req);
-	//     const { sort, attributes, filter } = req.query;
-
-	//     let param;
-
-	//     try {
-	//       param = {
-	//         sort: sort ? JSON.parse(sort) : ["id", "asc"],
-	//         filter: filter ? JSON.parse(filter) : {},
-	//         attributes: attributes ? JSON.parse(attributes) : null,
-	//         auth: req.auth,
-	//       };
-
-	//       postService
-	//         .get_all(param)
-	//         .then((data) => {
-	//           res.send({
-	//             result: data,
-	//             success: true,
-	//             errors: null,
-	//             messages: null,
-	//           });
-
-	//           // recordStartTime.call(res);
-	//           loggerHelpers.logInfor(req, res, { data });
-	//         })
-	//         .catch((err) => {
-	//           next(err);
-	//         });
-	//     } catch (error) {
-	//       const { code } = errorCode.paramError;
-	//       const statusCode = 406;
-	//       const errMsg = new Error(error).message;
-
-	//       // recordStartTime.call(res);
-	//       loggerHelpers.logError(req, res, { errMsg });
-	//       res.send({
-	//         result: null,
-	//         success: false,
-	//         errors: [{ code, message: errorCode.paramError.messages[0] }],
-	//         // messages: [codeMessage[statusCode], errMsg],
-	//       });
-	//     }
-	//   } catch (error) {
-	//     next(error);
-	//   }
-	// },
 };

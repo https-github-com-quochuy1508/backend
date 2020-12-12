@@ -26,15 +26,20 @@ module.exports = function (sequelize, DataTypes) {
 				allowNull: false,
 				field: 'password',
 			},
-			token: {
+			uuid: {
 				type: DataTypes.STRING(12),
 				allowNull: false,
-				field: 'token',
+				field: 'uuid',
 			},
 			avatar: {
-				type: DataTypes.STRING(12),
+				type: DataTypes.STRING(100),
 				allowNull: true,
 				field: 'avatar',
+			},
+			avatarCover: {
+				type: DataTypes.STRING(100),
+				allowNull: true,
+				field: 'avatar_cover',
 			},
 			countFriends: {
 				type: DataTypes.BIGINT,
