@@ -4,6 +4,8 @@ export default (models) => {
 	// MEDIA
 	posts.belongsTo(users, { as: 'users', foreignKey: 'userId' });
 	posts.hasMany(media, { as: 'media', foreignKey: 'postId' });
+	posts.hasMany(likes, { as: 'likes', foreignKey: 'postId' });
+	posts.hasMany(comments, { as: 'comments', foreignKey: 'postId' });
 
 	// MEDIA
 	media.belongsTo(users, { as: 'users', foreignKey: 'userId' });

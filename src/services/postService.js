@@ -6,8 +6,9 @@ import models from '../entity/index';
 import preCheckHelpers, { TYPE_CHECK } from '../helpers/preCheckHelpers';
 import filterHelpers from '../helpers/filterHelpers';
 import * as ApiErrors from '../errors';
+import { Sequelize } from 'sequelize';
 
-const { users, posts, media } = models;
+const { users, posts, media, comments, likes } = models;
 
 export default {
 	get_list: async (param) => {
@@ -23,6 +24,9 @@ export default {
 			const result = await Model.findAndCountAll(posts, {
 				where: whereFilter,
 				order: [sort],
+				attributes: { 
+					include: [[Sequelize.fn("COUNT", Sequelize.col("likes.id")), "likeCount"]] 
+				},
 				include: [
 					{
 						model: users,
@@ -34,7 +38,25 @@ export default {
 						as: 'media',
 						attributes: ['id', 'path', 'type'],
 					},
+					{
+						model: comments,
+						as: 'comments', 
+						attributes: ['content'],
+						include: [
+							{
+								model: users,
+								as: 'users',
+								attributes: ['id', 'name', 'avatar'],
+							}
+						]
+					},
+					{
+						model: likes, 
+						as: 'likes',
+						attributes: []
+					}
 				],
+				group: ['posts.id']
 			}).catch((error) => {
 				ErrorHelpers.errorThrow(error, 'getListError', 'postServices');
 			});
