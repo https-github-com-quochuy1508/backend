@@ -10,6 +10,7 @@ router.get('/', postValidate.authenFilter, postController.get_list);
 router.post('/', postValidate.authenCreate, postController.create);
 router.put('/:id', postValidate.authenUpdate, postController.update);
 router.get('/:id', postController.get_one);
-router.delete("/:id",postController.delete);
+router.get('/count/:id', postController.count);
+router.delete('/:id', postController.delete);
 
 export default router;
