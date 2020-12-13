@@ -50,14 +50,14 @@ export default {
 	delete: (req, res, next) => {
 		// recordStartTime.call(req);
 		try {
-			const { id } = req.params;
+			const { postId, userId } = req.params;
 			// const entity = { Status: 0 }
-			const param = { id };
+			const param = { postId, userId };
 
 			likeService
 				.delete(param)
 				.then((data) => {
-					if (data && data.status === 1) {
+					if (data && data.status !== 0) {
 						const dataOutput = {
 							result: null,
 							success: true,
