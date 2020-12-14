@@ -6,6 +6,6 @@ import likeValidate from '../../validate/likeValidate';
 const router = Router();
 
 router.post('/', likeValidate.authenCreate, likeController.create);
-router.delete('/:id', likeController.delete);
+router.delete('/userId=:userId&postId=:postId', likeController.delete);
 
 export default router;
