@@ -83,8 +83,7 @@ export default {
 		// recordStartTime.call(req);
 		try {
 			const userId = req.auth.userId;
-			const { id } = req.params;
-			const param = { id, userId };
+			const param = { userId };
 
 			// console.log("postService param: ", param)
 			postService

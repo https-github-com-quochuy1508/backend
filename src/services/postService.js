@@ -50,19 +50,15 @@ export default {
 					{
 						model: comments,
 						as: 'comments',
-						attributes: ['content'],
+						attributes: ['id', 'content'],
 						include: [
 							{
 								model: users,
 								as: 'users',
+								required: true,
 								attributes: ['id', 'name', 'avatar'],
 							},
 						],
-					},
-					{
-						model: likes,
-						as: 'likes',
-						attributes: [],
 					},
 				],
 				// group: ['posts.id'],
@@ -124,41 +120,76 @@ export default {
 		console.log('param: ', param);
 		let finalResult;
 		try {
-			const { id, userId } = param;
+			const { userId } = param;
 
 			const whereFilter = {
-				postId: id,
+				userId: userId,
 			};
 
-			const result = await Promise.all([
-				Model.count(likes, {
-					where: whereFilter,
+			let results = await Promise.all([
+				Model.findAll(likes, {
+					// where: whereFilter,
+					attributes: ['postId', [sequelize.fn('COUNT', sequelize.col('likes.post_id')), 'countLike']],
+					group: ['likes.post_id'],
+					raw: true,
 				}),
-				Model.count(comments, {
-					where: whereFilter,
+				Model.findAll(comments, {
+					attributes: ['postId', [sequelize.fn('COUNT', sequelize.col('comments.post_id')), 'countComment']],
+					group: ['comments.post_id'],
+					raw: true,
 				}),
-				Model.count(likes, {
-					where: {
-						...whereFilter,
-						userId: userId,
-					},
+				Model.findAll(likes, {
+					where: whereFilter,
+					attributes: ['postId'],
+					// group: ['likes.post_id'],
+					// raw: true,
+					distinct: true,
 				}),
 			]).catch((error) => {
 				ErrorHelpers.errorThrow(error, 'getInfoError', 'UserServices');
 			});
-			console.log('result: ', result);
-			if (!result) {
+			// result = _.keyBy(_.flatten(result), 'postId');
+			const data = {};
+			results = results.map((result, index) => {
+				result.map((e) => {
+					console.log('e: ', e);
+					console.log('index: ', index);
+					if (data.hasOwnProperty(e.postId)) {
+						if (index === 0) {
+							data[e.postId].countLike = e.countLike ? e.countLike : 0;
+						} else if (index === 1) {
+							data[e.postId].countComment = e.countComment ? e.countComment : 0;
+						} else if (index === 2) {
+							data[e.postId].isLike = true;
+						} else {
+							data[e.postId].countLike = 0;
+							data[e.postId].countComment = 0;
+							data[e.postId].isLike = false;
+						}
+					} else {
+						data[e.postId] = {};
+						if (index === 0) {
+							data[e.postId].countLike = e.countLike ? e.countLike : 0;
+						} else if (index === 1) {
+							data[e.postId].countComment = e.countComment ? e.countComment : 0;
+						} else if (index === 2) {
+							data[e.postId].isLike = true;
+						} else {
+							data[e.postId].countLike = 0;
+							data[e.postId].countComment = 0;
+							data[e.postId].isLike = false;
+						}
+					}
+				});
+			});
+			if (!data) {
 				return {
 					message: 'Không thể thực hiện truy vấn',
 				};
 			}
 
-			console.log('result: ', result);
-			finalResult = {
-				countLike: result[0],
-				countComment: result[1],
-				isLike: result[2] ? true : false,
-			};
+			console.log('result: ', data);
+			finalResult = data;
 		} catch (error) {
 			ErrorHelpers.errorThrow(error, 'getInfoError', 'UserServices');
 		}
