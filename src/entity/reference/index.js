@@ -18,9 +18,10 @@ export default (models) => {
 	// LIKE
 	likes.belongsTo(posts, { as: 'posts', foreignKey: 'postId' });
 	likes.belongsTo(users, { as: 'users', foreignKey: 'userId' });
-	
+
 	// COMMENT
-	friends.belongsTo(users, { as: 'users', foreignKey: 'userId' });
+	friends.belongsTo(users, { as: 'me', foreignKey: 'userId' });
+	friends.belongsTo(users, { as: 'you', foreignKey: 'friendId' });
 
 	// BLACKLIST
 	blacklist.belongsTo(users, { as: 'userOne', foreignKey: 'userOneId' });

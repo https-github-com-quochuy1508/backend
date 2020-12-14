@@ -79,6 +79,32 @@ export default {
 			next(error);
 		}
 	},
+	count: (req, res, next) => {
+		// recordStartTime.call(req);
+		try {
+			const userId = req.auth.userId;
+			const param = { userId };
+
+			// console.log("postService param: ", param)
+			postService
+				.count(param)
+				.then((data) => {
+					res.send(data);
+
+					// recordStartTime.call(res);
+					loggerHelpers.logInfor(req, res, {
+						dataParam: req.params,
+						dataQuery: req.query,
+					});
+				})
+				.catch((error) => {
+					next(error);
+				});
+		} catch (error) {
+			error.dataParams = req.params;
+			next(error);
+		}
+	},
 	create: (req, res, next) => {
 		// recordStartTime.call(req);
 		try {
@@ -165,44 +191,44 @@ export default {
 			next(error);
 		}
 	},
-	
+
 	delete: (req, res, next) => {
-	  // recordStartTime.call(req);
-	  try {
-	    const { id } = req.params;
-	    // const entity = { Status: 0 }
-	    const param = { id };
+		// recordStartTime.call(req);
+		try {
+			const { id } = req.params;
+			// const entity = { Status: 0 }
+			const param = { id };
 
-	    postService
-	      .delete(param)
-	      .then((data) => {
-	        if (data && data.status === 1) {
-	          const dataOutput = {
-	            result: null,
-	            success: true,
-	            errors: [],
-	            messages: [],
-	          };
+			postService
+				.delete(param)
+				.then((data) => {
+					if (data && data.status === 1) {
+						const dataOutput = {
+							result: null,
+							success: true,
+							errors: [],
+							messages: [],
+						};
 
-	          res.send(dataOutput);
+						res.send(dataOutput);
 
-	          // recordStartTime.call(res);
-	          loggerHelpers.logInfor(req, res, {});
-	        } else {
-	          throw new ApiErrors.BaseError({
-	            statusCode: 202,
-	            type: "deleteError",
-	          });
-	        }
-	      })
-	      .catch((error) => {
-	        error.dataParams = req.params;
-	        next(error);
-	      });
-	  } catch (error) {
-	    error.dataParams = req.params;
-	    next(error);
-	  }
+						// recordStartTime.call(res);
+						loggerHelpers.logInfor(req, res, {});
+					} else {
+						throw new ApiErrors.BaseError({
+							statusCode: 202,
+							type: 'deleteError',
+						});
+					}
+				})
+				.catch((error) => {
+					error.dataParams = req.params;
+					next(error);
+				});
+		} catch (error) {
+			error.dataParams = req.params;
+			next(error);
+		}
 	},
 
 	// get_all: (req, res, next) => {

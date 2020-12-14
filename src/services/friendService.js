@@ -7,17 +7,14 @@ import preCheckHelpers, { TYPE_CHECK } from '../helpers/preCheckHelpers';
 import filterHelpers from '../helpers/filterHelpers';
 import * as ApiErrors from '../errors';
 
-const { friends } = models;
+const { friends, users } = models;
 
 export default {
 	get_list: async (param) => {
 		console.log('param: ', param);
 		let finalResult;
 		try {
-			const { sort,
-				range,
-				filter 
-			} = param; // vua viet o validate
+			const { sort, range, filter } = param; // vua viet o validate
 
 			let whereFilter = filter;
 			console.log('filter: ', whereFilter);
@@ -27,6 +24,18 @@ export default {
 			const result = await Model.findAndCountAll(friends, {
 				where: whereFilter,
 				order: [sort],
+				include: [
+					{
+						model: users,
+						as: 'me',
+						attributes: ['id'],
+					},
+					{
+						model: users,
+						as: 'you',
+						attributes: ['id', 'name', 'avatar', 'telephone'],
+					},
+				],
 			}).catch((error) => {
 				ErrorHelpers.errorThrow(error, 'getListError', 'commentServices');
 			});
@@ -146,5 +155,4 @@ export default {
 		}
 		return { status: finalResult };
 	},
-
 };
