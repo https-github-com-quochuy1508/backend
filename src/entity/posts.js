@@ -23,8 +23,8 @@ module.exports = function (sequelize, DataTypes) {
 			},
 			createAt: {
 				type: DataTypes.DATE,
-                allowNull: false,
-                defaultValue: DataTypes.NOW,
+				allowNull: false,
+				defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
 				field: 'create_at',
             },
 		},

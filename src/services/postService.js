@@ -7,7 +7,7 @@ import preCheckHelpers, { TYPE_CHECK } from '../helpers/preCheckHelpers';
 import filterHelpers from '../helpers/filterHelpers';
 import * as ApiErrors from '../errors';
 import { Sequelize } from 'sequelize';
-import { sequelize } from '../db'
+import { sequelize } from '../db';
 const { QueryTypes } = require('sequelize');
 
 const { users, posts, media, comments, likes } = models;
@@ -29,13 +29,13 @@ export default {
 			const result = await Model.findAndCountAll(posts, {
 				where: whereFilter,
 				order: [sort],
-				attributes: { 
-					include: [
-						[Sequelize.fn("COUNT", Sequelize.col("likes.id")), "likeCount"], 
-						[Sequelize.fn("COUNT", Sequelize.col("comments.id")), "commentCount"],
-						[Sequelize.where(Sequelize.col('likes.user_id'), '=', userId), "isLike"]
-					],
-				},
+				// attributes: {
+				// 	include: [
+				// 		[Sequelize.fn('COUNT', Sequelize.col('likes.id')), 'likeCount'],
+				// 		[Sequelize.fn('COUNT', Sequelize.col('comments.id')), 'commentCount'],
+				// 		[Sequelize.where(Sequelize.col('likes.user_id'), '=', userId), 'isLike'],
+				// 	],
+				// },
 				include: [
 					{
 						model: users,
@@ -49,23 +49,19 @@ export default {
 					},
 					{
 						model: comments,
-						as: 'comments', 
-						attributes: ['content'],
+						as: 'comments',
+						attributes: ['id', 'content'],
 						include: [
 							{
 								model: users,
 								as: 'users',
+								required: true,
 								attributes: ['id', 'name', 'avatar'],
-							}
-						]
+							},
+						],
 					},
-					{
-						model: likes, 
-						as: 'likes',
-						attributes: []
-					}
 				],
-				group: ['posts.id']
+				// group: ['posts.id'],
 			}).catch((error) => {
 				ErrorHelpers.errorThrow(error, 'getListError', 'postServices');
 			});
@@ -115,6 +111,85 @@ export default {
 
 			console.log('result: ', result);
 			finalResult = result;
+		} catch (error) {
+			ErrorHelpers.errorThrow(error, 'getInfoError', 'UserServices');
+		}
+		return finalResult;
+	},
+	count: async (param) => {
+		console.log('param: ', param);
+		let finalResult;
+		try {
+			const { userId } = param;
+
+			const whereFilter = {
+				userId: userId,
+			};
+
+			let results = await Promise.all([
+				Model.findAll(likes, {
+					// where: whereFilter,
+					attributes: ['postId', [sequelize.fn('COUNT', sequelize.col('likes.post_id')), 'countLike']],
+					group: ['likes.post_id'],
+					raw: true,
+				}),
+				Model.findAll(comments, {
+					attributes: ['postId', [sequelize.fn('COUNT', sequelize.col('comments.post_id')), 'countComment']],
+					group: ['comments.post_id'],
+					raw: true,
+				}),
+				Model.findAll(likes, {
+					where: whereFilter,
+					attributes: ['postId'],
+					// group: ['likes.post_id'],
+					// raw: true,
+					distinct: true,
+				}),
+			]).catch((error) => {
+				ErrorHelpers.errorThrow(error, 'getInfoError', 'UserServices');
+			});
+			// result = _.keyBy(_.flatten(result), 'postId');
+			const data = {};
+			results = results.map((result, index) => {
+				result.map((e) => {
+					console.log('e: ', e);
+					console.log('index: ', index);
+					if (data.hasOwnProperty(e.postId)) {
+						if (index === 0) {
+							data[e.postId].countLike = e.countLike ? e.countLike : 0;
+						} else if (index === 1) {
+							data[e.postId].countComment = e.countComment ? e.countComment : 0;
+						} else if (index === 2) {
+							data[e.postId].isLike = true;
+						} else {
+							data[e.postId].countLike = 0;
+							data[e.postId].countComment = 0;
+							data[e.postId].isLike = false;
+						}
+					} else {
+						data[e.postId] = {};
+						if (index === 0) {
+							data[e.postId].countLike = e.countLike ? e.countLike : 0;
+						} else if (index === 1) {
+							data[e.postId].countComment = e.countComment ? e.countComment : 0;
+						} else if (index === 2) {
+							data[e.postId].isLike = true;
+						} else {
+							data[e.postId].countLike = 0;
+							data[e.postId].countComment = 0;
+							data[e.postId].isLike = false;
+						}
+					}
+				});
+			});
+			if (!data) {
+				return {
+					message: 'Không thể thực hiện truy vấn',
+				};
+			}
+
+			console.log('result: ', data);
+			finalResult = data;
 		} catch (error) {
 			ErrorHelpers.errorThrow(error, 'getInfoError', 'UserServices');
 		}

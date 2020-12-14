@@ -33,14 +33,14 @@ export default {
 		try {
 			const foundLikes = await Model.findOne(likes, {
 				where: {
-					id: param.id,
+					...param,
 				},
 			});
 
 			if (foundLikes) {
 				finalResult = await Model.destroy(likes, {
 					where: {
-						id: parseInt(param.id),
+						...param,
 					},
 				}).catch((error) => {
 					throw new ApiErrors.BaseError({
