@@ -54,7 +54,9 @@ export default {
 			const whereFilter = { id };
 
 			const result = await Model.findOne(users, {
-				where: whereFilter,
+				where: {
+					...whereFilter,
+				},
 				attributes: {
 					// include: [],
 					exclude: ['password', 'uuid'],
@@ -66,6 +68,7 @@ export default {
 						where: {
 							status: 2,
 						},
+						required: false,
 					},
 					{
 						model: posts,

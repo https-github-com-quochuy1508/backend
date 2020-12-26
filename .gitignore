@@ -3,3 +3,4 @@ uploads/
 logs/
 .vscode/
 .env
+npm-debug.log
