@@ -75,58 +75,36 @@ export default {
     },
 
     authenUpdate: (req, res, next) => {
-    	console.log('Validate Update Friend');
+        console.log('Validate Update Notification');
 
-    	const { status } = req.body;
-    	const friends = { status };
+        const { isRead } = req.body;
+        const notification = { isRead };
 
-    	const SCHEMA = ValidateJoi.assignSchema(DEFAULT_SCHEMA, {
-    		status: {
-    			required: noArguments,
-    		},
-    	});
+        const SCHEMA = ValidateJoi.assignSchema(DEFAULT_SCHEMA, {
+            isRead: {
+                required: noArguments,
+            },
+        });
 
-    	ValidateJoi.validate(friends, SCHEMA)
-    		.then((data) => {
-    			res.locals.body = data;
-    			next();
-    		})
-    		.catch((error) => next({ ...error, message: 'Định dạng gửi đi không đúng' }));
+        ValidateJoi.validate(notification, SCHEMA)
+            .then((data) => {
+                res.locals.body = data;
+                next();
+            })
+            .catch((error) => next({ ...error, message: 'Định dạng gửi đi không đúng' }));
     },
 
-    // friendFilter: (req, res, next) => {
-    // 	const { filter, sort, range } = req.query;
+    authenFilter: (req, res, next) => {
+        const { filter, sort, range } = req.query;
 
-    // 	res.locals.sort = sort
-    // 		? JSON.parse(sort).map((e, i) => (i === 0 ? sequelize.literal(`\`${e}\``) : e))
-    // 		: ['id', 'asc'];
-    // 	res.locals.range = range ? JSON.parse(range) : [0, 49];
+        res.locals.sort = sort
+            ? JSON.parse(sort).map((e, i) => (i === 0 ? sequelize.literal(`\`${e}\``) : e))
+            : ['id', 'desc'];
+        res.locals.range = range ? JSON.parse(range) : [0, 49];
 
-    // 	console.log('res.locals: ', res.locals);
+        console.log('res.locals: ', res.locals);
 
-    // 	if (filter) {
-    // 		const { status } = JSON.parse(filter);
-    // 		const friend = { status };
-
-    // 		const SCHEMA = { ...DEFAULT_SCHEMA };
-
-    // 		ValidateJoi.validate(friend, SCHEMA)
-    // 			.then((data) => {
-    // 				console.log('data: ', data);
-    // 				// if (postId) {
-    // 				// 		ValidateJoi.transStringToArray(data, 'id');
-    // 				// }
-
-    // 				res.locals.filter = data;
-    // 				console.log('locals.filter', res.locals.filter);
-    // 				next();
-    // 			})
-    // 			.catch((error) => {
-    // 				next({ ...error, message: 'Định dạng gửi đi không đúng' });
-    // 			});
-    // 	} else {
-    // 		res.locals.filter = {};
-    // 		next();
-    // 	}
-    // },
+        res.locals.filter = {};
+        next();
+    },
 };

@@ -6,35 +6,35 @@ import errorCode from '../utils/errorCode';
 import * as ApiErrors from '../errors';
 
 export default {
-	// get_list: (req, res, next) => {
-	// 	// recordStartTime.call(req);
-	// 	try {
-	// 		const { sort, range, filter } = res.locals;
-	// 		const param = {
-	// 			sort,
-	// 			range,
-	// 			filter,
-	// 		};
+	get_list: (req, res, next) => {
+		// recordStartTime.call(req);
+		try {
+			const { sort, range, filter } = res.locals;
+			const param = {
+				sort,
+				range,
+				filter,
+			};
 
-	// 		friendService
-	// 			.get_list(param)
-	// 			.then((data) => {
-	// 				res.send(data);
+			notificationService
+				.get_list(param)
+				.then((data) => {
+					res.send(data);
 
-	// 				// recordStartTime.call(res);
-	// 				loggerHelpers.logInfor(req, res, {
-	// 					dataParam: req.params,
-	// 					dataQuery: req.query,
-	// 				});
-	// 			})
-	// 			.catch((error) => {
-	// 				next(error);
-	// 			});
-	// 	} catch (error) {
-	// 		error.dataParams = req.params;
-	// 		next(error);
-	// 	}
-	// },
+					// recordStartTime.call(res);
+					loggerHelpers.logInfor(req, res, {
+						dataParam: req.params,
+						dataQuery: req.query,
+					});
+				})
+				.catch((error) => {
+					next(error);
+				});
+		} catch (error) {
+			error.dataParams = req.params;
+			next(error);
+		}
+	},
 
 	create: (req, res, next) => {
 		// recordStartTime.call(req);
@@ -86,7 +86,7 @@ export default {
 			// const entity = req.body
 			const param = { id, entity };
 
-			friendService
+			notificationService
 				.update(param)
 				.then((data) => {
 					if (data && data.result) {
@@ -132,7 +132,7 @@ export default {
 		  // const entity = { Status: 0 }
 		  const param = { id };
   
-		  messageService
+		  notificationService
 			.delete(param)
 			.then((data) => {
 			  if (data && data.status === 1) {
