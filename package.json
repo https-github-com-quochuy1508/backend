@@ -2,7 +2,7 @@
 	"name": "backend_facebook",
 	"version": "1.0.0",
 	"scripts": {
-		"dev": "nodemon --watch .env --watch src --exec babel-node src --source-maps",
+		"dev": "--watch .env --watch src --exec babel-node src --source-maps",
 		"start": "nodemon --watch .env --watch src --exec babel-node src --source-maps"
 	},
 	"repository": "https://gitlab.com/it4788/backend_facebook.git",
