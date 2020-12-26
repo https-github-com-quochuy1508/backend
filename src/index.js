@@ -91,8 +91,9 @@ app.get('/', (req, res) => res.send('Hello World!'));
 app.use(errorHandler.genericErrorHandler);
 app.use(errorHandler.methodNotAllowed);
 
-app.listen(app.get('port'), () => {
-	logger.info(`Server started at http://localhost:${app.get('port')}/api`);
+app.listen(process.env.PORT || 3000, () => {
+	// logger.info(`Server started at http://localhost:${app.get('port')}/api`);
+	console.log('Express server listening on port %d in %s mode', this.address().port, app.settings.env);
 });
 
 // Catch unhandled rejections
