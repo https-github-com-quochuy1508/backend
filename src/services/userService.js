@@ -8,7 +8,7 @@ import preCheckHelpers, { TYPE_CHECK } from '../helpers/preCheckHelpers';
 import filterHelpers from '../helpers/filterHelpers';
 import * as ApiErrors from '../errors';
 
-const { users, groupUsers, courses } = models;
+const { users, posts, friends } = models;
 
 export default {
 	get_list: async (param) => {
@@ -57,8 +57,22 @@ export default {
 				where: whereFilter,
 				attributes: {
 					// include: [],
-					exclude: ['password', 'token'],
+					exclude: ['password', 'uuid'],
 				},
+				include: [
+					{
+						model: friends,
+						as: 'friends',
+						where: {
+							status: 2,
+						},
+					},
+					{
+						model: posts,
+						as: 'posts',
+						// attributes: ['id', 'name', 'avatar'],
+					},
+				],
 			}).catch((error) => {
 				ErrorHelpers.errorThrow(error, 'getInfoError', 'UserServices');
 			});

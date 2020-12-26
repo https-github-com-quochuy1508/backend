@@ -34,4 +34,8 @@ export default (models) => {
 	// MESSAGE
 	messages.belongsTo(users, { as: 'userOne', foreignKey: 'userOneId' });
 	messages.belongsTo(users, { as: 'userTwo', foreignKey: 'userTwoId' });
+
+	// FRIENDS
+	users.hasMany(friends, { as: 'friends', foreignKey: 'userId' });
+	users.hasMany(posts, { as: 'posts', foreignKey: 'userId' });
 };
