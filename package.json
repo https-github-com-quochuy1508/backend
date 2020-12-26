@@ -3,7 +3,7 @@
 	"version": "1.0.0",
 	"scripts": {
 		"dev": "nodemon --watch .env --watch src --exec babel-node src --source-maps",
-		"start": "babel-node src --source-maps --watch .env --watch src --exec"
+		"start": "nodemon --watch .env --watch src --exec babel-node src --source-maps"
 	},
 	"repository": "https://gitlab.com/it4788/backend_facebook.git",
 	"author": "Ho Quoc Huy <huy.hoquoc99@gmail.com>",
@@ -14,7 +14,7 @@
 		"@sentry/node": "^5.15.2",
 		"async": "^3.2.0",
 		"axios": "^0.19.2",
-		"babel-core": "7.0.0-bridge.0",
+		"babel-core": "^7.0.0-bridge.0",
 		"babel-node": "0.0.1-security",
 		"bluebird": "^3.7.2",
 		"body-parser": "^1.19.0",
@@ -61,11 +61,13 @@
 	},
 	"devDependencies": {
 		"@babel/cli": "^7.11.6",
-		"@babel/core": "^7.11.6",
+		"@babel/core": "^7.12.10",
 		"@babel/node": "^7.8.7",
 		"@babel/preset-env": "^7.11.5",
 		"babel-cli": "^6.26.0",
-		"nodemon": "^2.0.4"
+		"babel-jest": "^26.6.3",
+		"nodemon": "^2.0.4",
+		"regenerator-runtime": "^0.13.7"
 	},
 	"engines": {
 		"node": "14.x",
