@@ -32,14 +32,18 @@ module.exports = function (sequelize, DataTypes) {
 				field: 'uuid',
 			},
 			avatar: {
-				type: DataTypes.STRING(100),
+				type: DataTypes.STRING(500),
 				allowNull: true,
 				field: 'avatar',
+				defaultValue:
+					'https://i1.wp.com/www.labelprint.co.za/wp-content/uploads/2018/11/user-icon-image-placeholder-300-grey.jpg?w=300&ssl=1',
 			},
 			avatarCover: {
-				type: DataTypes.STRING(100),
+				type: DataTypes.STRING(500),
 				allowNull: true,
 				field: 'avatar_cover',
+				defaultValue:
+					'https://i1.wp.com/www.labelprint.co.za/wp-content/uploads/2018/11/user-icon-image-placeholder-300-grey.jpg?w=300&ssl=1',
 			},
 			countFriends: {
 				type: DataTypes.BIGINT,

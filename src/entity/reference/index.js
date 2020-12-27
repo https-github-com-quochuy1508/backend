@@ -37,4 +37,8 @@ export default (models) => {
 
 	// NOTIFICATIONS
 	notifications.belongsTo(users, { as: 'users', foreignKey: 'userId' });
+	
+	// FRIENDS
+	users.hasMany(friends, { as: 'friends', foreignKey: 'userId' });
+	users.hasMany(posts, { as: 'posts', foreignKey: 'userId' });
 };
