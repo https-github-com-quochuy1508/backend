@@ -136,13 +136,13 @@ export default {
 
 						res.send(dataOutput);
 
-						recordStartTime.call(res);
-						loggerHelpers
-							.logUpdate(req, res, {
-								dataQuery: req.query,
-								dataOutput: data.result,
-							})
-							.catch((error) => console.log(error));
+						// recordStartTime.call(res);
+						// loggerHelpers
+						// 	.logUpdate(req, res, {
+						// 		dataQuery: req.query,
+						// 		dataOutput: data.result,
+						// 	})
+						// 	.catch((error) => console.log(error));
 					} else {
 						throw new ApiErrors.BaseError({
 							statusCode: 202,

@@ -192,21 +192,21 @@ export default {
 			});
 
 			if (foundUser) {
-				const infoArr = await Promise.all([
-					Model.findOne(users, {
-						where: {
-							id: { $ne: param.id },
-							telephone: entity.ne || foundUser.ne,
-						},
-					}),
-				]);
-				if (infoArr[0]) {
-					throw new ApiErrors.BaseError({
-						statusCode: 202,
-						type: 'getInfoError',
-						message: 'Không xác thực được thông tin gửi lên',
-					});
-				}
+				// const infoArr = await Promise.all([
+				// 	Model.findOne(users, {
+				// 		where: {
+				// 			id: { $ne: param.id },
+				// 			// telephone: entity.ne || foundUser.ne,
+				// 		},
+				// 	}),
+				// ]);
+				// if (infoArr[0]) {
+				// 	throw new ApiErrors.BaseError({
+				// 		statusCode: 202,
+				// 		type: 'getInfoError',
+				// 		message: 'Không xác thực được thông tin gửi lên',
+				// 	});
+				// }
 
 				await Model.update(users, entity, {
 					where: {
