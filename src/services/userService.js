@@ -8,7 +8,7 @@ import preCheckHelpers, { TYPE_CHECK } from '../helpers/preCheckHelpers';
 import filterHelpers from '../helpers/filterHelpers';
 import * as ApiErrors from '../errors';
 
-const { users, posts, friends } = models;
+const { users, posts, media, comments, likes } = models;
 
 export default {
 	get_list: async (param) => {
@@ -63,17 +63,39 @@ export default {
 				},
 				include: [
 					{
-						model: friends,
-						as: 'friends',
-						where: {
-							status: 2,
-						},
-						required: false,
-					},
-					{
 						model: posts,
 						as: 'posts',
 						// attributes: ['id', 'name', 'avatar'],
+						include: [
+							{
+								model: users,
+								as: 'users',
+								attributes: ['id', 'name', 'avatar'],
+							},
+							{
+								model: media,
+								as: 'media',
+								attributes: ['id', 'path', 'type'],
+							},
+							{
+								model: likes,
+								as: 'likes',
+								attributes: ['id'],
+							},
+							{
+								model: comments,
+								as: 'comments',
+								attributes: ['id', 'content'],
+								include: [
+									{
+										model: users,
+										as: 'users',
+										required: true,
+										attributes: ['id', 'name', 'avatar'],
+									},
+								],
+							},
+						],
 					},
 				],
 			}).catch((error) => {
