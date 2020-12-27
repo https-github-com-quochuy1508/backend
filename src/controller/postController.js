@@ -53,6 +53,53 @@ export default {
 			next(error);
 		}
 	},
+	search: (req, res, next) => {
+		// recordStartTime.call(req);
+		console.log('locals', res.locals);
+		try {
+			const { sort, range, filter } = res.locals;
+			const param = {
+				sort,
+				range,
+				filter,
+				auth: req.auth,
+			};
+
+			postService
+				.search(param)
+				.then((data) => {
+					const dataOutput = {
+						result: {
+							list: data.rows,
+							pagination: {
+								current: data.page,
+								pageSize: data.perPage,
+								total: data.count,
+							},
+						},
+						success: true,
+						errors: [],
+						messages: [],
+					};
+
+					res.header('Content-Range', `sclSocialAccounts ${range}/${data.count}`);
+					res.send(dataOutput); // tra ve du lieu
+					// write log
+					// recordStartTime.call(res);
+					loggerHelpers.logInfor(req, res, {
+						dataParam: req.params,
+						dataQuery: req.query,
+					});
+				})
+				.catch((error) => {
+					error.dataQuery = req.query;
+					next(error);
+				});
+		} catch (error) {
+			error.dataQuery = req.query;
+			next(error);
+		}
+	},
 	get_one: (req, res, next) => {
 		// recordStartTime.call(req);
 		try {
