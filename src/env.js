@@ -1,11 +1,13 @@
-import path from 'path'
-import dotenv from 'dotenv'
+import path from 'path';
+import dotenv from 'dotenv';
 
 /**
- * Initialize environment variables. 
+ * Initialize environment variables.
  */
-if (process.env.NODE_ENV === "production") {
-  dotenv.config({ path: path.resolve(process.cwd(), '.env.production') });
+if (process.env.NODE_ENV === 'production') {
+	console.log('HELLO production');
+	dotenv.config({ path: path.resolve(process.cwd(), '.env.production') });
 } else {
-  dotenv.config(); 
+	console.log('HELLO no production');
+	dotenv.config();
 }
