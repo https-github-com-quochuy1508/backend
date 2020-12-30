@@ -94,16 +94,19 @@ export default {
 				const status = finalResult[1] && finalResult[1]['dataValues'] && finalResult[1]['dataValues'].status;
 				if (status === 0) {
 					data = {
+						id: finalResult[1]['dataValues'].id,
 						status: 0,
 						info: 'TH Chưa kết bạn',
 					};
 				} else if (status === 1) {
 					data = {
+						id: finalResult[1]['dataValues'].id,
 						status: 1,
 						info: 'Chờ xác nhận',
 					};
 				} else if (status === 2) {
 					data = {
+						id: finalResult[1]['dataValues'].id,
 						status: 2,
 						info: 'Đã là bạn bè',
 					};
@@ -113,16 +116,19 @@ export default {
 				// TH Mình là người thao tác tới tài khoản bạn bè
 				if (status === 0) {
 					data = {
+						id: finalResult[0]['dataValues'].id,
 						status: 0,
 						info: 'TH Chưa kết bạn',
 					};
 				} else if (status === 1) {
 					data = {
+						id: finalResult[0]['dataValues'].id,
 						status: -1,
 						info: 'TH chờ người khác xác nhận',
 					};
 				} else if (status === 2) {
 					data = {
+						id: finalResult[0]['dataValues'].id,
 						status: 2,
 						info: 'Đã là bạn bè',
 					};
