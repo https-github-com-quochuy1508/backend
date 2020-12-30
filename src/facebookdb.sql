@@ -73,6 +73,21 @@ create table `comments` (
     user_id int(11),
     create_at datetime
 );
+
+create table `notifications` (
+	id int(11) primary key AUTO_INCREMENT,
+    type int(3),
+    object_id int(11);
+    title nvarchar(100);
+    user_id int(11);
+    create_at datetime:
+    avatar varchar(100);
+    isGroup boolean;
+    isRead boolean;
+    last_update datetime;
+    badge int(11);
+);
+
 ALTER TABLE `users` CHANGE `birthday` `birthday` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP;
 
 ALTER TABLE `facebookdb`.`users` 

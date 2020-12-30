@@ -26,7 +26,7 @@ module.exports = function (sequelize, DataTypes) {
 				allowNull: false,
 				defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
 				field: 'create_at',
-            },
+			},
 		},
 		{
 			tableName: 'posts',

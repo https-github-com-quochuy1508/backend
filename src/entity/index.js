@@ -14,6 +14,7 @@ const modules = [
 	require('./friends'),
 	require('./reports'),
 	require('./messages'),
+	require('./notifications')
 ];
 
 // console.log("modules: ", modules);

@@ -6,6 +6,7 @@ import friends from './vi-Vi/friends';
 import blacklist from './vi-Vi/blacklist';
 import reports from './vi-Vi/reports';
 import messages from './vi-Vi/messages';
+import notifications from './vi-Vi/notifications';
 
 export default {
 	// Định nghĩa thông tin chung cho phần thông báo
@@ -58,4 +59,7 @@ export default {
 
 	// Messages
 	...messages,
+
+	// Notifications
+	...notifications,
 };
