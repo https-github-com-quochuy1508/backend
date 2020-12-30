@@ -68,6 +68,73 @@ export default {
 		return { result: finalResult };
 	},
 
+	checkFriend: async (param) => {
+		console.log('param: ', param);
+		const { friendId, userId } = param;
+		let finalResult;
+		let data = null;
+		try {
+			finalResult = await Promise.all([
+				Model.findOne(friends, { where: param }),
+				Model.findOne(friends, {
+					where: {
+						friendId: userId,
+						userId: friendId,
+					},
+				}),
+			]);
+			if (!finalResult[0] && !finalResult[1]) {
+				// TH Chưa kết bạn
+				console.log('ok1: ');
+				data = {
+					status: 0,
+					info: 'TH Chưa kết bạn',
+				};
+			} else if (!finalResult[0] && finalResult[1]) {
+				const status = finalResult[1] && finalResult[1]['dataValues'] && finalResult[1]['dataValues'].status;
+				if (status === 0) {
+					data = {
+						status: 0,
+						info: 'TH Chưa kết bạn',
+					};
+				} else if (status === 1) {
+					data = {
+						status: 1,
+						info: 'Chờ xác nhận',
+					};
+				} else if (status === 2) {
+					data = {
+						status: 2,
+						info: 'Đã là bạn bè',
+					};
+				}
+			} else if (finalResult[0] && !finalResult[1]) {
+				const status = finalResult[0] && finalResult[0]['dataValues'] && finalResult[0]['dataValues'].status;
+				// TH Mình là người thao tác tới tài khoản bạn bè
+				if (status === 0) {
+					data = {
+						status: 0,
+						info: 'TH Chưa kết bạn',
+					};
+				} else if (status === 1) {
+					data = {
+						status: -1,
+						info: 'TH chờ người khác xác nhận',
+					};
+				} else if (status === 2) {
+					data = {
+						status: 2,
+						info: 'Đã là bạn bè',
+					};
+				}
+			}
+		} catch (error) {
+			ErrorHelpers.errorThrow(error, 'crudError', 'commentServices');
+		}
+		console.log('data: ', data);
+		return data;
+	},
+
 	update: async (param) => {
 		let finalResult;
 

@@ -1,4 +1,5 @@
 import userService from '../services/userService';
+import friendService from '../services/friendService';
 import * as ApiErrors from '../errors';
 
 export default {
@@ -49,6 +50,30 @@ export default {
 			userService
 				.get_one(param)
 				.then((data) => {
+					// res.header('Content-Range', `articles ${range}/${data.count}`);
+					res.send(data);
+
+					// loggerHelpers.logInfor(req, res, {
+					//   dataParam: req.params,
+					//   dataQuery: req.query,
+					// });
+				})
+				.catch((err) => {
+					next(err);
+				});
+		} catch (error) {
+			next(error);
+		}
+	},
+	check_friend: (req, res, next) => {
+		try {
+			const friendId = req.params.friendId;
+			const userId = req.auth.userId;
+			const param = { friendId, userId };
+			friendService
+				.checkFriend(param)
+				.then((data) => {
+					console.log('data: ', data);
 					// res.header('Content-Range', `articles ${range}/${data.count}`);
 					res.send(data);
 
