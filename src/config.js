@@ -1,9 +1,9 @@
-import path from 'path'
-import dotenv from 'dotenv'
-if (process.env.NODE_ENV === "production") {
-  dotenv.config({ path: path.resolve(process.cwd(), '.env.production') });
+import path from 'path';
+import dotenv from 'dotenv';
+if (process.env.NODE_ENV === 'production') {
+	dotenv.config({ path: path.resolve(process.cwd(), '.env.production') });
 } else {
-  dotenv.config();
+	dotenv.config();
 }
 
 const config = { ...process.env };
@@ -15,18 +15,18 @@ config.sqlSms = {};
 config.sql.pool = {};
 
 // sql
-config.sql.port = process.env.SQL_PORT
-config.sql.user = process.env.SQL_USER
-config.sql.password = process.env.SQL_PASSWORD
-config.sql.server = process.env.SQL_SERVER
-config.sql.database = process.env.SQL_DATABASE
-config.sqlSms.user = process.env.SQL_SMS_USER
-config.sqlSms.password = process.env.SQL_SMS_PASSWORD
-config.sqlSms.database = process.env.SQL_SMS_DATABASE
-config.sql.pool.max = 50;
+config.sql.port = process.env.SQL_PORT;
+config.sql.user = process.env.SQL_USER;
+config.sql.password = process.env.SQL_PASSWORD;
+config.sql.server = process.env.SQL_SERVER;
+config.sql.database = process.env.SQL_DATABASE;
+config.sqlSms.user = process.env.SQL_SMS_USER;
+config.sqlSms.password = process.env.SQL_SMS_PASSWORD;
+config.sqlSms.database = process.env.SQL_SMS_DATABASE;
+config.sql.pool.max = 2;
 config.sql.pool.min = 0;
-config.sql.pool.idleTimeoutMillis = 1000000
-config.sql.connectionTimeout = 1000000
+config.sql.pool.idleTimeoutMillis = 1000;
+config.sql.connectionTimeout = 1000;
 
 // web
 // config.web.name = process.env.WEB_NAME
@@ -39,7 +39,7 @@ config.sql.connectionTimeout = 1000000
 // config.filemanager = process.env.WEB_DIR_FILE_MANAGER
 // config.web.image_server = process.env.IMAGE_SERVER
 
-config.PREFIX_API = process.env.PREFIX_API
+config.PREFIX_API = process.env.PREFIX_API;
 config.WEB_DIR_FILE_CONFIG_SERVER_OUT = process.env.WEB_DIR_FILE_CONFIG_SERVER_OUT;
 config.WEB_DIR_FILE_CONFIG_SERVER_TEMPLATE = process.env.WEB_DIR_FILE_CONFIG_SERVER_TEMPLATE;
 

@@ -1,5 +1,5 @@
 node_modules/
-uploads/ 
 logs/
 .vscode/
-.env
+npm-debug.log
+uploads/
