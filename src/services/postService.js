@@ -77,6 +77,83 @@ export default {
 		return finalResult;
 	},
 
+	search: async (param) => {
+		console.log('param: ', param);
+		let finalResult;
+		try {
+			const { filter, range, sort, auth } = param; // vua viet o validate
+			let userId = auth.userId;
+			// const filterComment = {
+			// 	content: param.filter
+			// };
+			let whereFilter = filterHelpers.makeStringFilterRelatively(['content'], filter);
+			let whereFilerUser = {
+				name: whereFilter.content,
+			};
+
+			// let whereFilterComment = filterHelpers.makeStringFilterRelatively(['contentComment'], filterComment);
+			console.log('filter: ', whereFilter);
+			const perPage = range[1] - range[0] + 1;
+			const page = Math.floor(range[0] / perPage);
+
+			// token, postId, ton tai postId, userId
+			const result = await Model.findAndCountAll(posts, {
+				where: {
+					$or: [
+						{ '$users.name$': whereFilter.content },
+						{ '$posts.content$': whereFilter.content },
+						{ '$comments.content$': whereFilter.content },
+					],
+				},
+				order: [sort],
+				// attributes: {
+				// 	include: [
+				// 		[Sequelize.fn('COUNT', Sequelize.col('likes.id')), 'likeCount'],
+				// 		[Sequelize.fn('COUNT', Sequelize.col('comments.id')), 'commentCount'],
+				// 		[Sequelize.where(Sequelize.col('likes.user_id'), '=', userId), 'isLike'],
+				// 	],
+				// },
+				include: [
+					{
+						model: users,
+						as: 'users',
+						attributes: ['id', 'name', 'avatar'],
+					},
+					{
+						model: media,
+						as: 'media',
+						attributes: ['id', 'path', 'type'],
+					},
+					{
+						model: comments,
+						as: 'comments',
+						attributes: ['id', 'content'],
+						include: [
+							{
+								model: users,
+								as: 'users',
+								required: true,
+								attributes: ['id', 'name', 'avatar'],
+							},
+						],
+					},
+				],
+				// group: ['posts.id'],
+			}).catch((error) => {
+				ErrorHelpers.errorThrow(error, 'getListError', 'postServices');
+			});
+
+			finalResult = {
+				...result,
+				page: page + 1,
+				perPage,
+			};
+		} catch (error) {
+			ErrorHelpers.errorThrow(error, 'getListError', 'postServices');
+		}
+		return finalResult;
+	},
+
 	get_one: async (param) => {
 		console.log('param: ', param);
 		let finalResult;

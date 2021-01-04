@@ -9,6 +9,7 @@ import friendRoutes from './routes/apiRouter/friendRoutes';
 import blacklistRoutes from './routes/apiRouter/blacklistRoutes';
 import reportRoutes from './routes/apiRouter/reportRoutes';
 import messageRoutes from './routes/apiRouter/messageRoutes';
+import notificationRoutes from './routes/apiRouter/notificationRoutes';
 
 const router = Router();
 
@@ -28,5 +29,6 @@ router.use('/likes', likeRoutes);
 router.use('/blacklist', blacklistRoutes);
 router.use('/reports', reportRoutes);
 router.use('/messages', messageRoutes);
+router.use('/notifications', notificationRoutes);
 
 export default router;

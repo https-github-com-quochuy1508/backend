@@ -7,35 +7,26 @@ import preCheckHelpers, { TYPE_CHECK } from '../helpers/preCheckHelpers';
 import filterHelpers from '../helpers/filterHelpers';
 import * as ApiErrors from '../errors';
 
-const { friends, users } = models;
+const { notifications } = models;
 
 export default {
 	get_list: async (param) => {
 		console.log('param: ', param);
 		let finalResult;
 		try {
-			const { sort, range, filter } = param; // vua viet o validate
+			const { sort,
+				range,
+				filter
+			} = param; // vua viet o validate
 
 			let whereFilter = filter;
 			console.log('filter: ', whereFilter);
 			const perPage = range[1] - range[0] + 1;
 			const page = Math.floor(range[0] / perPage);
 
-			const result = await Model.findAndCountAll(friends, {
+			const result = await Model.findAndCountAll(notifications, {
 				where: whereFilter,
 				order: [sort],
-				include: [
-					{
-						model: users,
-						as: 'me',
-						attributes: ['id'],
-					},
-					{
-						model: users,
-						as: 'you',
-						attributes: ['id', 'name', 'avatar', 'telephone'],
-					},
-				],
 			}).catch((error) => {
 				ErrorHelpers.errorThrow(error, 'getListError', 'commentServices');
 			});
@@ -59,7 +50,15 @@ export default {
 
 			console.log('entity: ', entity);
 
-			finalResult = await Model.create(friends, entity).catch((err) => {
+			/**
+			 * Tinh so thong bao moi
+			 */
+			entity = {
+				...entity,
+				badge: 0,
+			}
+
+			finalResult = await Model.create(notifications, entity).catch((err) => {
 				ErrorHelpers.errorThrow(err, 'crudError', 'commentServices');
 			});
 		} catch (error) {
@@ -68,93 +67,20 @@ export default {
 		return { result: finalResult };
 	},
 
-	checkFriend: async (param) => {
-		console.log('param: ', param);
-		const { friendId, userId } = param;
-		let finalResult;
-		let data = null;
-		try {
-			finalResult = await Promise.all([
-				Model.findOne(friends, { where: param }),
-				Model.findOne(friends, {
-					where: {
-						friendId: userId,
-						userId: friendId,
-					},
-				}),
-			]);
-			if (!finalResult[0] && !finalResult[1]) {
-				// TH Chưa kết bạn
-				console.log('ok1: ');
-				data = {
-					status: 0,
-					info: 'TH Chưa kết bạn',
-				};
-			} else if (!finalResult[0] && finalResult[1]) {
-				const status = finalResult[1] && finalResult[1]['dataValues'] && finalResult[1]['dataValues'].status;
-				if (status === 0) {
-					data = {
-						id: finalResult[1]['dataValues'].id,
-						status: 0,
-						info: 'TH Chưa kết bạn',
-					};
-				} else if (status === 1) {
-					data = {
-						id: finalResult[1]['dataValues'].id,
-						status: 1,
-						info: 'Chờ xác nhận',
-					};
-				} else if (status === 2) {
-					data = {
-						id: finalResult[1]['dataValues'].id,
-						status: 2,
-						info: 'Đã là bạn bè',
-					};
-				}
-			} else if (finalResult[0] && !finalResult[1]) {
-				const status = finalResult[0] && finalResult[0]['dataValues'] && finalResult[0]['dataValues'].status;
-				// TH Mình là người thao tác tới tài khoản bạn bè
-				if (status === 0) {
-					data = {
-						id: finalResult[0]['dataValues'].id,
-						status: 0,
-						info: 'TH Chưa kết bạn',
-					};
-				} else if (status === 1) {
-					data = {
-						id: finalResult[0]['dataValues'].id,
-						status: -1,
-						info: 'TH chờ người khác xác nhận',
-					};
-				} else if (status === 2) {
-					data = {
-						id: finalResult[0]['dataValues'].id,
-						status: 2,
-						info: 'Đã là bạn bè',
-					};
-				}
-			}
-		} catch (error) {
-			ErrorHelpers.errorThrow(error, 'crudError', 'commentServices');
-		}
-		console.log('data: ', data);
-		return data;
-	},
-
 	update: async (param) => {
 		let finalResult;
 
 		try {
 			let { entity } = param;
 
-			const foundFriend = await Model.findOne(friends, {
+			const foundNotification = await Model.findOne(notifications, {
 				where: {
 					id: param.id,
 				},
 			});
 
-			if (foundFriend) {
-				await Model.update(friends, entity, {
+			if (foundNotification) {
+				await Model.update(notifications, entity, {
 					where: {
 						id: parseInt(param.id),
 					},
@@ -167,7 +93,7 @@ export default {
 					});
 				}); // 1 0
 
-				finalResult = await Model.findOne(friends, {
+				finalResult = await Model.findOne(notifications, {
 					where: {
 						id: parseInt(param.id),
 					},
@@ -197,14 +123,14 @@ export default {
 		let finalResult;
 
 		try {
-			const foundFriend = await Model.findOne(friends, {
+			const foundNotification = await Model.findOne(notifications, {
 				where: {
 					id: param.id,
 				},
 			});
 
-			if (foundFriend) {
-				finalResult = await Model.destroy(friends, {
+			if (foundNotification) {
+				finalResult = await Model.destroy(notifications, {
 					where: {
 						id: parseInt(param.id),
 					},
@@ -228,4 +154,5 @@ export default {
 		}
 		return { status: finalResult };
 	},
+
 };

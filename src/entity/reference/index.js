@@ -1,5 +1,5 @@
 export default (models) => {
-	const { users, posts, media, comments, likes, friends, blacklist, reports, messages } = models;
+	const { users, posts, media, comments, likes, friends, blacklist, reports, messages, notifications } = models;
 
 	// MEDIA
 	posts.belongsTo(users, { as: 'users', foreignKey: 'userId' });
@@ -35,7 +35,10 @@ export default (models) => {
 	messages.belongsTo(users, { as: 'userOne', foreignKey: 'userOneId' });
 	messages.belongsTo(users, { as: 'userTwo', foreignKey: 'userTwoId' });
 
+	// NOTIFICATIONS
+	notifications.belongsTo(users, { as: 'users', foreignKey: 'userId' });
+	
 	// FRIENDS
-	users.hasMany(friends, { as: 'friends', foreignKey: 'userId' });
+	users.hasMany(friends, { as: 'friends' });
 	users.hasMany(posts, { as: 'posts', foreignKey: 'userId' });
 };

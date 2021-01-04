@@ -4,6 +4,7 @@ import path from 'path';
 const router = Router();
 
 const ROOT_DIR = process.cwd();
+console.log('ROOT_DIR: ', ROOT_DIR);
 const ROOT_DIR_CONTAINER = `${ROOT_DIR}/uploads`;
 
 const readFile = (fileName) =>

@@ -4,6 +4,7 @@ const router = Router();
 import os from 'os';
 import fs from 'fs';
 import path from 'path';
+import cloudinary from 'cloudinary';
 import encodeStr from '../../utils/encodeStr';
 import * as ApiErrors from '../../errors';
 import mediaValidate from '../../validate/mediaValidate';
@@ -11,7 +12,13 @@ import Model from '../../models/models';
 import models from '../../entity/index';
 import ErrorHelpers from '../../helpers/errorHelpers';
 import mediaController from '../../controller/mediaController';
-
+var formidable = require('formidable');
+var uploads = {};
+cloudinary.config({
+	cloud_name: 'dnhw0fqtx',
+	api_key: '385388229282542',
+	api_secret: 'pYq_kJ34-BQ1DCvpielwd1IiSQA',
+});
 const { media } = models;
 const ROOT_DIR = process.cwd();
 const ROOT_DIR_CONTAINER = `${ROOT_DIR}/uploads`;
@@ -63,35 +70,174 @@ const upload = multer({
 	fileFilter,
 	limits: 1024 * 1024 * 1024,
 });
-router.post('/uploadfile', upload.single('myFiles'), mediaValidate.authenCreate, async (req, res, next) => {
-	const file = req.file;
-	let objReturn;
-	const { userId, postId } = res.locals.body;
-	if (!file) {
-		throw new ApiErrors.BaseError({
-			statusCode: 202,
-			type: 'uploadFileFaild',
-			error: 'Có lỗi trong lúc upload',
-		});
-	} else {
-		const dirPath = path.resolve(file.path).replace(/\\/g, '/');
-		const dirRelativePath = `myFiles${dirPath.split('myFiles')[1]}`;
-		const networkTemp = os.networkInterfaces()['wlp3s0'] || os.networkInterfaces()['Wi-Fi'];
-		const networkInterfaces = networkTemp[0]['address'];
-
-		console.log(os.networkInterfaces());
-
-		const entity = {
-			userId,
-			postId,
-			type: file.mimetype,
-			path: networkInterfaces + ':3001/web/upload/getFile/' + dirRelativePath,
-		};
-		objReturn = await Model.create(media, entity).catch((err) => {
-			ErrorHelpers.errorThrow(error, 'crudError', 'postServices');
-		});
+function waitForAllUploads(id, err, image) {
+	uploads[id] = image;
+	var ids = Object.keys(uploads);
+	if (ids.length === 6) {
+		console.log();
+		console.log('**  uploaded all files (' + ids.join(',') + ') to cloudinary');
+		performTransformations();
 	}
-	res.send(objReturn);
+}
+
+function performTransformations() {
+	console.log();
+	console.log();
+	console.log();
+	console.log('>> >> >> >> >> >> >> >> >> >>  Transformations << << << << << << << << << <<');
+	console.log();
+	console.log('> Fit into 200x150');
+	console.log(
+		'> ' + cloudinary.url(uploads.pizza2.public_id, { width: 200, height: 150, crop: 'fit', format: 'jpg' })
+	);
+
+	console.log();
+	console.log('> Eager transformation of scaling to 200x150');
+	console.log('> ' + cloudinary.url(uploads.lake.public_id, eager_options));
+
+	console.log();
+	console.log('> Face detection based 200x150 thumbnail');
+	console.log(
+		'> ' +
+			cloudinary.url(uploads.couple.public_id, {
+				width: 200,
+				height: 150,
+				crop: 'thumb',
+				gravity: 'faces',
+				format: 'jpg',
+			})
+	);
+
+	console.log();
+	console.log('> Fill 200x150, round corners, apply the sepia effect');
+	console.log(
+		'> ' +
+			cloudinary.url(uploads.couple2.public_id, {
+				width: 200,
+				height: 150,
+				crop: 'fill',
+				gravity: 'face',
+				radius: 10,
+				effect: 'sepia',
+				format: 'jpg',
+			})
+	);
+
+	console.log();
+	console.log("> That's it. You can now open the URLs above in a browser");
+	console.log('> and check out the generated images.');
+}
+
+router.post('/uploadfile', async (req, res, next) => {
+	try {
+		var form = await new formidable.IncomingForm();
+		await form.parse(req, async (err, fields, files) => {
+			if (!err) {
+				const { userId, postId } = fields;
+				if (files.myFiles.type.includes('video')) {
+					cloudinary.v2.uploader.upload(
+						files.myFiles.path,
+						{
+							resource_type: 'video',
+							public_id: 'my_folder/my_sub_folder/dog_closeup',
+							chunk_size: 6000000,
+							eager: [
+								{ width: 300, height: 300, crop: 'pad', audio_codec: 'none' },
+								{ width: 160, height: 100, crop: 'crop', gravity: 'south', audio_codec: 'none' },
+							],
+							eager_async: true,
+							eager_notification_url: 'https://mysite.example.com/notify_endpoint',
+						},
+						async function (error, result) {
+							if (error) {
+								console.warn(error);
+								res.send(error);
+							}
+							const entity = {
+								userId,
+								postId,
+								type: files.myFiles.type,
+								path: result.url,
+							};
+							let objReturn = await Model.create(media, entity).catch((err) => {
+								ErrorHelpers.errorThrow(error, 'crudError', 'postServices');
+							});
+							if (objReturn.dataValues) {
+								res.send(objReturn);
+							}
+						}
+					);
+				} else if (files.myFiles.type.includes('image')) {
+					await cloudinary.v2.uploader.upload(
+						files.myFiles.path,
+						{ tags: 'basic_sample' },
+						async function (err, image) {
+							console.log('** Image Upload');
+							if (err) {
+								console.warn(err);
+								res.send(err);
+							}
+							console.log("* public_id for the uploaded image is generated by Cloudinary's service.");
+							// console.log('* ' + image.public_id);
+							console.log('* ' + image);
+							const entity = {
+								userId,
+								postId,
+								type: files.myFiles.type,
+								path: image.url,
+							};
+							let objReturn = await Model.create(media, entity).catch((err) => {
+								ErrorHelpers.errorThrow(error, 'crudError', 'postServices');
+							});
+							if (objReturn.dataValues) {
+								waitForAllUploads(objReturn.dataValues.id, err, image);
+								res.send(objReturn);
+							}
+						}
+					);
+				}
+			} else {
+				throw new ApiErrors.BaseError({
+					statusCode: 202,
+					type: 'uploadFileFaild',
+					error: 'Có lỗi trong lúc upload',
+				});
+			}
+		});
+	} catch (error) {
+		console.log('error: ', error);
+	}
+});
+router.post('/user/changeAvatar', async (req, res, next) => {
+	try {
+		var form = await new formidable.IncomingForm();
+		await form.parse(req, async (err, fields, files) => {
+			if (!err) {
+				await cloudinary.v2.uploader.upload(
+					files.myFiles.path,
+					{ tags: 'basic_sample' },
+					function (err, image) {
+						console.log('** Image Upload');
+						if (err) {
+							console.warn(err);
+							res.send(err);
+						}
+						res.send({
+							path: image.url,
+						});
+					}
+				);
+			} else {
+				throw new ApiErrors.BaseError({
+					statusCode: 202,
+					type: 'uploadFileFaild',
+					error: 'Có lỗi trong lúc upload',
+				});
+			}
+		});
+	} catch (error) {
+		res.send(error);
+	}
 });
 router.post('/uploadMultifile', upload.array('myFiles', 12), (req, res, next) => {
 	const file = req.files;

@@ -8,7 +8,7 @@ import preCheckHelpers, { TYPE_CHECK } from '../helpers/preCheckHelpers';
 import filterHelpers from '../helpers/filterHelpers';
 import * as ApiErrors from '../errors';
 
-const { users, posts, friends } = models;
+const { users, posts, media, comments, likes } = models;
 
 export default {
 	get_list: async (param) => {
@@ -54,23 +54,48 @@ export default {
 			const whereFilter = { id };
 
 			const result = await Model.findOne(users, {
-				where: whereFilter,
+				where: {
+					...whereFilter,
+				},
 				attributes: {
 					// include: [],
 					exclude: ['password', 'uuid'],
 				},
 				include: [
 					{
-						model: friends,
-						as: 'friends',
-						where: {
-							status: 2,
-						},
-					},
-					{
 						model: posts,
 						as: 'posts',
 						// attributes: ['id', 'name', 'avatar'],
+						include: [
+							{
+								model: users,
+								as: 'users',
+								attributes: ['id', 'name', 'avatar'],
+							},
+							{
+								model: media,
+								as: 'media',
+								attributes: ['id', 'path', 'type'],
+							},
+							{
+								model: likes,
+								as: 'likes',
+								attributes: ['id'],
+							},
+							{
+								model: comments,
+								as: 'comments',
+								attributes: ['id', 'content'],
+								include: [
+									{
+										model: users,
+										as: 'users',
+										required: true,
+										attributes: ['id', 'name', 'avatar'],
+									},
+								],
+							},
+						],
 					},
 				],
 			}).catch((error) => {
@@ -167,21 +192,21 @@ export default {
 			});
 
 			if (foundUser) {
-				const infoArr = await Promise.all([
-					Model.findOne(users, {
-						where: {
-							id: { $ne: param.id },
-							telephone: entity.ne || foundUser.ne,
-						},
-					}),
-				]);
-				if (infoArr[0]) {
-					throw new ApiErrors.BaseError({
-						statusCode: 202,
-						type: 'getInfoError',
-						message: 'Không xác thực được thông tin gửi lên',
-					});
-				}
+				// const infoArr = await Promise.all([
+				// 	Model.findOne(users, {
+				// 		where: {
+				// 			id: { $ne: param.id },
+				// 			// telephone: entity.ne || foundUser.ne,
+				// 		},
+				// 	}),
+				// ]);
+				// if (infoArr[0]) {
+				// 	throw new ApiErrors.BaseError({
+				// 		statusCode: 202,
+				// 		type: 'getInfoError',
+				// 		message: 'Không xác thực được thông tin gửi lên',
+				// 	});
+				// }
 
 				await Model.update(users, entity, {
 					where: {

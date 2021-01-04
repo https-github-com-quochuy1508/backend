@@ -16,7 +16,7 @@ export default {
 		try {
 			const { sort,
 				range,
-				filter 
+				filter
 			} = param; // vua viet o validate
 
 			let whereFilter = filter;
@@ -27,6 +27,13 @@ export default {
 			const result = await Model.findAndCountAll(comments, {
 				where: whereFilter,
 				order: [sort],
+				include: [
+					{
+						model: users,
+						as: 'users',
+						attributes: ['id', 'name', 'avatar'],
+					},
+				],
 			}).catch((error) => {
 				ErrorHelpers.errorThrow(error, 'getListError', 'commentServices');
 			});
